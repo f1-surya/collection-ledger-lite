@@ -50,7 +50,7 @@ export default function AddConnection() {
       Toast.show(i18.get("savedConnection"));
     } catch (err) {
       console.error(err);
-      // @ts-expect-error
+      // @ts-expect-error Message will be there
       Toast.show(err.message);
     }
   };
