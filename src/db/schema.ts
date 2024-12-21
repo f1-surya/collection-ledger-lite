@@ -59,3 +59,15 @@ export const paymentsTable = t.sqliteTable(
   },
   (table) => [t.index("connectionIndex").on(table.connection)],
 );
+
+export const migrationsTable = t.sqliteTable(
+  "migrations_table",
+  {
+    id: t.int().primaryKey({ autoIncrement: true }),
+    connection: t.int().references(() => connectionsTable.id),
+    migrationDate: t.text().default(sql`CURRENT_TIMESTAMP`),
+    from: t.int().references(() => basePacksTable.id),
+    to: t.int().references(() => basePacksTable.id),
+  },
+  () => [],
+);
