@@ -1,7 +1,6 @@
 import FormTextInput from "@/components/form-text-input";
 import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
-import i18 from "@/lib/i18";
 import i18n from "@/lib/i18";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -47,7 +46,7 @@ export default function AddConnection() {
     try {
       await db.insert(connectionsTable).values(data);
       router.back();
-      Toast.show(i18.get("savedConnection"));
+      Toast.show(i18n.get("savedConnection"));
     } catch (err) {
       console.error(err);
       // @ts-expect-error Message will be there
@@ -188,7 +187,7 @@ export default function AddConnection() {
         </Button>
       </View>
       <Button onPress={handleSubmit(saveConnection)} mode="contained">
-        {i18.get("save")}
+        {i18n.get("save")}
       </Button>
       <Portal>
         <Dialog visible={addArea} onDismiss={() => setAddArea(false)}>
@@ -199,6 +198,7 @@ export default function AddConnection() {
               mode="outlined"
               value={areaName}
               onChangeText={setAreaName}
+              autoFocus
             />
           </Dialog.Content>
           <Dialog.Actions>

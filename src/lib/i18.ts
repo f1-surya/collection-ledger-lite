@@ -22,6 +22,7 @@ const i18n = new I18n({
     savedConnection: "இணைப்பு வெற்றிகரமாக சேமிக்கப்பட்டது",
     markAsPaid: "செலுத்தப்பட்டது",
     history: "வரலாறு",
+    lastPayment: "கடைசி கட்டணம்",
   },
 });
 
