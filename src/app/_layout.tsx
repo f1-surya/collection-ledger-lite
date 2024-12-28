@@ -40,9 +40,11 @@ export default function RootLayout() {
           <Stack>
             <Stack.Screen
               name="add-connection"
-              options={{
-                title: "Add connection",
-              }}
+              options={{ title: "Add connection" }}
+            />
+            <Stack.Screen
+              name="view-connection"
+              options={{ title: "View connection" }}
             />
           </Stack>
         </RootSiblingParent>

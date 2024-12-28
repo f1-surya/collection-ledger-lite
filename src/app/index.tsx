@@ -1,12 +1,9 @@
 import { db } from "@/db";
-import {
-  areasTable,
-  basePacksTable,
-  connectionsTable,
-  paymentsTable,
-} from "@/db/schema";
+import { markConnectionAsPaid } from "@/db/connection-funcs";
+import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
 import i18 from "@/lib/i18";
 import { FlashList } from "@shopify/flash-list";
+import { isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as Clipboard from "expo-clipboard";
@@ -38,10 +35,6 @@ export default function Index() {
         eq(connectionsTable.basePack, basePacksTable.id),
       )
       .innerJoin(areasTable, eq(connectionsTable.area, areasTable.id))
-      .leftJoin(
-        paymentsTable,
-        eq(connectionsTable.id, paymentsTable.connection),
-      )
       .orderBy(connectionsTable.name),
   );
   const [connections, setConnections] = useState<typeof data>([]);
@@ -53,6 +46,15 @@ export default function Index() {
   useEffect(() => {
     setConnections(data);
   }, [data]);
+
+  const viewConnection = () => {
+    if (!currConnection) return;
+    router.push({
+      pathname: "/view-connection",
+      params: { id: currConnection?.connections_table.id },
+    });
+    setCurrConnection(null);
+  };
 
   const launchSmsTamil = () => {
     if (!currConnection) return;
@@ -71,9 +73,10 @@ export default function Index() {
   const markAsPaid = async () => {
     if (!currConnection) return;
     try {
-      await db
-        .insert(paymentsTable)
-        .values({ connection: currConnection.connections_table.id });
+      await markConnectionAsPaid(
+        currConnection.connections_table.id,
+        currConnection.base_packs_table,
+      );
       setCurrConnection(null);
     } catch (e) {
       console.error(e);
@@ -111,7 +114,13 @@ export default function Index() {
                     width: 15,
                     height: 15,
                     borderRadius: 15,
-                    backgroundColor: item.item.payments_table ? "green" : "red",
+                    backgroundColor:
+                      item.item.connections_table.lastPayment &&
+                      isThisMonth(
+                        new Date(item.item.connections_table.lastPayment),
+                      )
+                        ? "green"
+                        : "red",
                     marginRight: 20,
                   }}
                 />
@@ -152,7 +161,11 @@ export default function Index() {
                   </Text>
                 </Pressable>
               </View>
-              <IconButton icon="account-edit" mode="contained" />
+              <IconButton
+                icon="account"
+                mode="contained"
+                onPress={viewConnection}
+              />
             </View>
             <Divider style={styles.divider} bold />
             <Text
@@ -214,11 +227,13 @@ export default function Index() {
               <Button
                 mode="contained"
                 onPress={markAsPaid}
-                disabled={Boolean(currConnection?.payments_table)}
+                disabled={
+                  Boolean(currConnection?.connections_table.lastPayment) &&
+                  isThisMonth(currConnection!.connections_table.lastPayment!)
+                }
               >
                 {i18.get("markAsPaid")}
               </Button>
-              {/*<Button mode="outlined">{i18.get("history")}</Button>*/}
             </View>
           </View>
         </Modal>

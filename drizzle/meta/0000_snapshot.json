@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f85336d0-3677-404e-bbf6-47ebdffcbe30",
+  "id": "c272feb2-ba32-4eda-aff5-ed0e6fc943ee",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "addons_table": {
@@ -149,16 +149,23 @@
           "name": "basePack",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "status": {
           "name": "status",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "'active'"
+        },
+        "lastPayment": {
+          "name": "lastPayment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -227,31 +234,93 @@
           "name": "connection",
           "type": "integer",
           "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "currentPack": {
+          "name": "currentPack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "to": {
+          "name": "to",
+          "type": "integer",
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "paymentDate": {
-          "name": "paymentDate",
+        "type": {
+          "name": "type",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "'payment'"
+        },
+        "month": {
+          "name": "month",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "customerPrice": {
+          "name": "customerPrice",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lcoPrice": {
+          "name": "lcoPrice",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
-      "indexes": {
-        "connectionIndex": {
-          "name": "connectionIndex",
-          "columns": ["connection"],
-          "isUnique": false
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "payments_table_connection_connections_table_id_fk": {
           "name": "payments_table_connection_connections_table_id_fk",
           "tableFrom": "payments_table",
           "tableTo": "connections_table",
           "columnsFrom": ["connection"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payments_table_currentPack_base_packs_table_id_fk": {
+          "name": "payments_table_currentPack_base_packs_table_id_fk",
+          "tableFrom": "payments_table",
+          "tableTo": "base_packs_table",
+          "columnsFrom": ["currentPack"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payments_table_to_base_packs_table_id_fk": {
+          "name": "payments_table_to_base_packs_table_id_fk",
+          "tableFrom": "payments_table",
+          "tableTo": "base_packs_table",
+          "columnsFrom": ["to"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
