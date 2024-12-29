@@ -3,20 +3,28 @@ import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { router } from "expo-router";
-import { Check, ChevronDown, ChevronUp, Plus } from "lucide-react-native";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { Plus } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, useColorScheme, View } from "react-native";
-import { Button, Dialog, Portal, Text, TextInput } from "react-native-paper";
+import {
+  Button,
+  Dialog,
+  Icon,
+  Portal,
+  Text,
+  TextInput,
+} from "react-native-paper";
 import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
 import { z } from "zod";
 
 const formSchema = z.object({
-  boxNumber: z.string().min(10),
+  boxNumber: z.string().min(10).toLowerCase(),
   name: z.string(),
   area: z.number(),
   phoneNumber: z.string().min(10),
@@ -24,7 +32,7 @@ const formSchema = z.object({
 });
 
 export default function AddConnection() {
-  const { control, setValue, handleSubmit } = useForm<
+  const { control, setValue, handleSubmit, getValues } = useForm<
     z.infer<typeof formSchema>
   >({
     resolver: zodResolver(formSchema),
@@ -34,6 +42,24 @@ export default function AddConnection() {
   const colorScheme = useColorScheme();
   const [addArea, setAddArea] = useState(false);
   const [areaName, setAreaName] = useState("");
+  const { id } = useLocalSearchParams<{ id?: string }>();
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchConnection = async () => {
+      const connection = await db.query.connectionsTable.findFirst({
+        where: eq(connectionsTable.id, parseInt(id)),
+      });
+      if (connection) {
+        setValue("name", connection.name);
+        setValue("boxNumber", connection.boxNumber);
+        setValue("phoneNumber", connection.phoneNumber ?? "");
+        setValue("area", connection.area);
+        setValue("basePack", connection.basePack);
+      }
+    };
+    fetchConnection();
+  }, [id]);
 
   const saveArea = async () => {
     const res = await db.insert(areasTable).values({ name: areaName });
@@ -44,7 +70,28 @@ export default function AddConnection() {
 
   const saveConnection = async (data: z.infer<typeof formSchema>) => {
     try {
-      await db.insert(connectionsTable).values(data);
+      const prevConnection = await db.query.connectionsTable.findFirst({
+        where: eq(connectionsTable.boxNumber, data.boxNumber),
+      });
+      if (id) {
+        if (prevConnection && prevConnection.id !== parseInt(id)) {
+          Toast.show(i18n.get("duplicateSmc"));
+          return;
+        } else {
+          await db
+            .update(connectionsTable)
+            .set(data)
+            .where(eq(connectionsTable.id, parseInt(id)));
+        }
+      } else {
+        if (prevConnection) {
+          Toast.show(i18n.get("duplicateSmc"));
+          return;
+        } else {
+          await db.insert(connectionsTable).values(data);
+        }
+      }
+
       router.back();
       Toast.show(i18n.get("savedConnection"));
     } catch (err) {
@@ -79,20 +126,16 @@ export default function AddConnection() {
             <View style={{ width: "80%" }}>
               <SelectDropdown
                 data={areas}
-                renderButton={(selected, isOpened) => (
+                renderButton={(_selected, isOpened) => (
                   <View style={styles.dropDownButton}>
                     <Text style={styles.areaName}>
-                      {selected?.name ?? "Select an area"}
+                      {areas.find((area) => area.id === getValues().area)
+                        ?.name ?? "Select an area"}
                     </Text>
-                    {!isOpened ? (
-                      <ChevronDown
-                        color={colorScheme === "dark" ? "white" : "black"}
-                      />
-                    ) : (
-                      <ChevronUp
-                        color={colorScheme === "dark" ? "white" : "black"}
-                      />
-                    )}
+                    <Icon
+                      source={isOpened ? "chevron-up" : "chevron-down"}
+                      size={25}
+                    />
                   </View>
                 )}
                 renderItem={(item, _index, isSelected) => (
@@ -104,7 +147,7 @@ export default function AddConnection() {
                     }
                   >
                     <Text>{item.name}</Text>
-                    {isSelected && <Check />}
+                    {isSelected && <Icon source="check" size={20} />}
                   </View>
                 )}
                 onSelect={(item) => onChange(item.id)}
@@ -126,66 +169,66 @@ export default function AddConnection() {
           style={styles.addButton}
           onPress={() => setAddArea(true)}
         >
-          <Plus color={colorScheme === "dark" ? "white" : "black"} size={20} />
+          <Plus color={colorScheme === "dark" ? "white" : "black"} size={25} />
         </Button>
       </View>
-      <View style={styles.areaSelector}>
-        <Controller
-          name="basePack"
-          control={control}
-          render={({ field: { onChange }, fieldState }) => (
-            <View style={{ width: "80%" }}>
-              <SelectDropdown
-                data={packs}
-                renderButton={(selected, isOpened) => (
-                  <View style={styles.dropDownButton}>
-                    <Text style={styles.areaName}>
-                      {selected?.name ?? "Select base pack"}
-                    </Text>
-                    {!isOpened ? (
-                      <ChevronDown
-                        color={colorScheme === "dark" ? "white" : "black"}
+      {!id && (
+        <View style={styles.areaSelector}>
+          <Controller
+            name="basePack"
+            control={control}
+            render={({ field: { onChange }, fieldState }) => (
+              <View style={{ width: "80%" }}>
+                <SelectDropdown
+                  data={packs}
+                  renderButton={(selected, isOpened) => (
+                    <View style={styles.dropDownButton}>
+                      <Text style={styles.areaName}>
+                        {selected?.name ?? "Select base pack"}
+                      </Text>
+                      <Icon
+                        source={isOpened ? "chevron-up" : "chevron-down"}
+                        size={25}
                       />
-                    ) : (
-                      <ChevronUp
-                        color={colorScheme === "dark" ? "white" : "black"}
-                      />
-                    )}
-                  </View>
-                )}
-                renderItem={(item, _index, isSelected) => (
-                  <View
-                    style={
-                      colorScheme === "dark"
-                        ? styles.areaDark
-                        : styles.areaLight
-                    }
+                    </View>
+                  )}
+                  renderItem={(item, _index, isSelected) => (
+                    <View
+                      style={
+                        colorScheme === "dark"
+                          ? styles.areaDark
+                          : styles.areaLight
+                      }
+                    >
+                      <Text>{item.name}</Text>
+                      {isSelected && <Icon source="check" size={20} />}
+                    </View>
+                  )}
+                  onSelect={(item) => onChange(item.id)}
+                />
+                {fieldState.error && (
+                  <Text
+                    variant="labelSmall"
+                    style={{ color: "red", marginTop: 5 }}
                   >
-                    <Text>{item.name}</Text>
-                    {isSelected && <Check />}
-                  </View>
+                    {fieldState.error.message}
+                  </Text>
                 )}
-                onSelect={(item) => onChange(item.id)}
-              />
-              {fieldState.error && (
-                <Text
-                  variant="labelSmall"
-                  style={{ color: "red", marginTop: 5 }}
-                >
-                  {fieldState.error.message}
-                </Text>
-              )}
-            </View>
-          )}
-        />
-        <Button
-          mode="outlined"
-          style={styles.addButton}
-          onPress={() => router.push("/add-pack")}
-        >
-          <Plus color={colorScheme === "dark" ? "white" : "black"} size={20} />
-        </Button>
-      </View>
+              </View>
+            )}
+          />
+          <Button
+            mode="outlined"
+            style={styles.addButton}
+            onPress={() => router.push("/add-pack")}
+          >
+            <Plus
+              color={colorScheme === "dark" ? "white" : "black"}
+              size={25}
+            />
+          </Button>
+        </View>
+      )}
       <Button onPress={handleSubmit(saveConnection)} mode="contained">
         {i18n.get("save")}
       </Button>

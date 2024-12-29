@@ -17,7 +17,10 @@ export const connectionsTable = t.sqliteTable(
     id: t.int().primaryKey({ autoIncrement: true }),
     name: t.text().notNull(),
     boxNumber: t.text().notNull(),
-    area: t.int().references(() => areasTable.id),
+    area: t
+      .int()
+      .notNull()
+      .references(() => areasTable.id),
     phoneNumber: t.text(),
     basePack: t
       .int()

@@ -9,7 +9,15 @@ import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, useLocalSearchParams } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Button, Card, Divider, Icon, List, Text } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Divider,
+  Icon,
+  IconButton,
+  List,
+  Text,
+} from "react-native-paper";
 import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,6 +50,13 @@ export default function ViewConnection() {
     }
   };
 
+  const editConnection = async () => {
+    router.push({
+      pathname: "/add-connection",
+      params: { id },
+    });
+  };
+
   type Connection = NonNullable<typeof data>;
   type Payment = Connection["payments"][number];
 
@@ -72,6 +87,13 @@ export default function ViewConnection() {
           titleVariant="titleMedium"
           subtitle={`Box number: ${data?.boxNumber}`}
           subtitleVariant="titleSmall"
+          right={(props) => (
+            <IconButton
+              {...props}
+              icon="account-edit"
+              onPress={editConnection}
+            />
+          )}
         />
         <Card.Content>
           <Text>Area: {data?.area?.name}</Text>

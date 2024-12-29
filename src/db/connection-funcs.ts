@@ -3,6 +3,11 @@ import { db } from ".";
 import { basePacksTable, connectionsTable, paymentsTable } from "./schema";
 import { toSqliteTimestamp } from "./columns.helpers";
 
+/**
+ * This function marks a connection as paid by inserting a new payment
+ * @param {number} connectionId Id of the connection
+ * @param {typeof basePacksTable.$inferSelect} currentPack Current pack of the connection
+ */
 export const markConnectionAsPaid = async (
   connectionId: number,
   currentPack: typeof basePacksTable.$inferSelect,
@@ -26,6 +31,13 @@ export const markConnectionAsPaid = async (
   ]);
 };
 
+/**
+ * This function migrates a connection to a new pack by creating a migration
+ * payment
+ * @param {number} connectionId Id of the connection
+ * @param {number} currentPack Id of the current pack
+ * @param {number} toPackId Id of the pack to migrate to
+ */
 export const migratePack = async (
   connectionId: number,
   currentPack: number,
