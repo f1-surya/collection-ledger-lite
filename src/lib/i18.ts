@@ -23,6 +23,7 @@ const i18n = new I18n({
     markAsPaid: "செலுத்தப்பட்டது",
     history: "வரலாறு",
     lastPayment: "கடைசி கட்டணம்",
+    duplicateSmc: "இந்த செட்டாப் பாக்ஸ் எண் ஏற்கனவே உள்ளது",
   },
 });
 
