@@ -50,7 +50,7 @@ export default function Index() {
   const viewConnection = () => {
     if (!currConnection) return;
     router.push({
-      pathname: "/view-connection",
+      pathname: "/connection/view-connection",
       params: { id: currConnection?.connections_table.id },
     });
     setCurrConnection(null);
@@ -241,7 +241,7 @@ export default function Index() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => router.push("/add-connection")}
+        onPress={() => router.push("/connection/add-connection")}
       />
     </SafeAreaView>
   );

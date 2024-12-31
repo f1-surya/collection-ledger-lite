@@ -5,7 +5,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Stack } from "expo-router";
+import { Drawer } from "expo-router/drawer";
 import { useColorScheme } from "react-native";
 import { adaptNavigationTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
@@ -37,16 +37,16 @@ export default function RootLayout() {
         value={colorScheme === "dark" ? CombinedDarkTheme : CombinedLightTheme}
       >
         <RootSiblingParent>
-          <Stack>
-            <Stack.Screen
-              name="add-connection"
-              options={{ title: "Add connection" }}
+          <Drawer>
+            <Drawer.Screen name="index" options={{ title: "Connections" }} />
+            <Drawer.Screen
+              name="connection"
+              options={{
+                headerShown: false,
+                drawerLabel: () => null,
+              }}
             />
-            <Stack.Screen
-              name="view-connection"
-              options={{ title: "View connection" }}
-            />
-          </Stack>
+          </Drawer>
         </RootSiblingParent>
       </ThemeProvider>
     </PaperProvider>

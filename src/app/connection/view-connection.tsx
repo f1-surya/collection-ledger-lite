@@ -7,7 +7,7 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import {
   Button,
@@ -52,7 +52,7 @@ export default function ViewConnection() {
 
   const editConnection = async () => {
     router.push({
-      pathname: "/add-connection",
+      pathname: "/connection/add-connection",
       params: { id },
     });
   };
@@ -81,6 +81,19 @@ export default function ViewConnection() {
 
   return (
     <SafeAreaView style={styles.root}>
+      <Stack.Screen
+        options={{
+          title: "View connection",
+          headerLeft: (props) => (
+            <IconButton
+              {...props}
+              icon="arrow-left"
+              style={{ margin: 0, width: "auto", marginRight: 25 }}
+              onPress={router.back}
+            />
+          ),
+        }}
+      />
       <Card>
         <Card.Title
           title={`${i18n.get("customerName")}: ${data?.name}`}
@@ -111,7 +124,7 @@ export default function ViewConnection() {
             mode="text"
             onPress={() =>
               router.push({
-                pathname: "/pack-migration",
+                pathname: "/connection/pack-migration",
                 params: { connectionId: id, currentPack: data?.basePack?.id },
               })
             }

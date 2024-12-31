@@ -220,7 +220,7 @@ export default function AddConnection() {
           <Button
             mode="outlined"
             style={styles.addButton}
-            onPress={() => router.push("/add-pack")}
+            onPress={() => router.push("/connection/add-pack")}
           >
             <Plus
               color={colorScheme === "dark" ? "white" : "black"}
