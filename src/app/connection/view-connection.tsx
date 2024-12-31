@@ -10,6 +10,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import {
+  Appbar,
   Button,
   Card,
   Divider,
@@ -85,9 +86,8 @@ export default function ViewConnection() {
         options={{
           title: "View connection",
           headerLeft: (props) => (
-            <IconButton
+            <Appbar.BackAction
               {...props}
-              icon="arrow-left"
               style={{ margin: 0, width: "auto", marginRight: 25 }}
               onPress={router.back}
             />

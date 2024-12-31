@@ -29,7 +29,7 @@ const CombinedDarkTheme = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { success } = useMigrations(db, migrations);
+  useMigrations(db, migrations);
 
   return (
     <PaperProvider>
@@ -43,9 +43,10 @@ export default function RootLayout() {
               name="connection"
               options={{
                 headerShown: false,
-                drawerLabel: () => null,
+                drawerItemStyle: { display: "none" },
               }}
             />
+            <Drawer.Screen name="history" options={{ title: "History" }} />
           </Drawer>
         </RootSiblingParent>
       </ThemeProvider>
