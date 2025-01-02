@@ -5,12 +5,14 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Stack } from "expo-router";
-import { useColorScheme } from "react-native";
+import { Drawer } from "expo-router/drawer";
+import { BackHandler, useColorScheme } from "react-native";
 import { adaptNavigationTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import { RootSiblingParent } from "react-native-root-siblings";
 import migrations from "../../drizzle/migrations";
+import { useEffect } from "react";
+import { router } from "expo-router";
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -29,7 +31,14 @@ const CombinedDarkTheme = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { success } = useMigrations(db, migrations);
+  useMigrations(db, migrations);
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", () => {
+      router.back();
+      return false;
+    });
+  }, []);
 
   return (
     <PaperProvider>
@@ -37,16 +46,17 @@ export default function RootLayout() {
         value={colorScheme === "dark" ? CombinedDarkTheme : CombinedLightTheme}
       >
         <RootSiblingParent>
-          <Stack>
-            <Stack.Screen
-              name="add-connection"
-              options={{ title: "Add connection" }}
+          <Drawer>
+            <Drawer.Screen name="index" options={{ title: "Connections" }} />
+            <Drawer.Screen
+              name="connection"
+              options={{
+                headerShown: false,
+                drawerItemStyle: { display: "none" },
+              }}
             />
-            <Stack.Screen
-              name="view-connection"
-              options={{ title: "View connection" }}
-            />
-          </Stack>
+            <Drawer.Screen name="history" options={{ title: "History" }} />
+          </Drawer>
         </RootSiblingParent>
       </ThemeProvider>
     </PaperProvider>

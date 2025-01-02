@@ -50,7 +50,7 @@ export default function Index() {
   const viewConnection = () => {
     if (!currConnection) return;
     router.push({
-      pathname: "/view-connection",
+      pathname: "/connection/view-connection",
       params: { id: currConnection?.connections_table.id },
     });
     setCurrConnection(null);
@@ -105,7 +105,7 @@ export default function Index() {
             <Card.Title
               title={item.item.connections_table.name}
               titleVariant="titleLarge"
-              subtitle={`SMC # ${item.item.connections_table.boxNumber}`}
+              subtitle={`SMC # ${item.item.connections_table.boxNumber}  :  Pack: ${item.item.base_packs_table.name}`}
               subtitleVariant="titleSmall"
               right={(props) => (
                 <View
@@ -241,7 +241,7 @@ export default function Index() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => router.push("/add-connection")}
+        onPress={() => router.push("/connection/add-connection")}
       />
     </SafeAreaView>
   );

@@ -24,12 +24,12 @@ export default function AddPack() {
 
   const savePack = async (data: z.infer<typeof packSchema>) => {
     try {
-      const res = await db.insert(basePacksTable).values(data);
+      await db.insert(basePacksTable).values(data);
       reset();
       router.back();
     } catch (error) {
       console.error(error);
-      // @ts-expect-error
+      // @ts-expect-error error is not typed
       Toast.show(error.message);
     }
   };

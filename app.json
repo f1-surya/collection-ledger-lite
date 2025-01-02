@@ -16,7 +16,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "packageName": "com.surya.collectionledger"
+      "packageName": "com.surya.collectionledger",
+      "permissions": [
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
+        "DOWNLOADS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +43,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7ced4a7f-1214-4774-b5b1-4b822cf118ef"
+      }
+    },
+    "owner": "f1-surya"
   }
 }

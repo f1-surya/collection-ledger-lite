@@ -79,7 +79,7 @@ export default function PackMigration() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => router.push("/add-pack")}
+        onPress={() => router.push("/connection/add-pack")}
       />
     </SafeAreaView>
   );
