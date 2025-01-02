@@ -105,7 +105,7 @@ export default function Index() {
             <Card.Title
               title={item.item.connections_table.name}
               titleVariant="titleLarge"
-              subtitle={`SMC # ${item.item.connections_table.boxNumber}`}
+              subtitle={`SMC # ${item.item.connections_table.boxNumber}  :  Pack: ${item.item.base_packs_table.name}`}
               subtitleVariant="titleSmall"
               right={(props) => (
                 <View

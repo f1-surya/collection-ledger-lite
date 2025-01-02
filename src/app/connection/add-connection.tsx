@@ -32,7 +32,7 @@ const formSchema = z.object({
 });
 
 export default function AddConnection() {
-  const { control, setValue, handleSubmit, getValues } = useForm<
+  const { control, setValue, handleSubmit, getValues, reset } = useForm<
     z.infer<typeof formSchema>
   >({
     resolver: zodResolver(formSchema),
@@ -92,6 +92,7 @@ export default function AddConnection() {
         }
       }
 
+      reset();
       router.back();
       Toast.show(i18n.get("savedConnection"));
     } catch (err) {

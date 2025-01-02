@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { paymentsTable } from "@/db/schema";
+import { askPermission, saveFile } from "@/lib/file-sytem";
 import i18n from "@/lib/i18";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { and, eq } from "drizzle-orm";
@@ -7,6 +8,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useEffect, useState } from "react";
 import { StyleSheet, useColorScheme, View } from "react-native";
 import {
+  Button,
   Divider,
   Icon,
   List,
@@ -14,8 +16,10 @@ import {
   Surface,
   Text,
 } from "react-native-paper";
+import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
+import XLSX from "xlsx";
 
 const today = new Date();
 
@@ -54,12 +58,81 @@ export default function History() {
           ),
         })
         .then((data) => {
-          setPayments(data.filter((payment) => payment.type === paymentType));
+          setPayments(data);
         });
     } else if (data) {
-      setPayments(data.filter((payment) => payment.type === paymentType));
+      setPayments(data);
     }
-  }, [paymentType, data, month, year]);
+  }, [data, month, year]);
+
+  const exportData = async () => {
+    try {
+      const workbook = XLSX.utils.book_new();
+      const paymentsSheet = XLSX.utils.aoa_to_sheet(
+        payments
+          .filter((payment) => payment.type === "payment")
+          .map((payment) => payment.connection.boxNumber)
+          .map((no) => [no]),
+      );
+      XLSX.utils.book_append_sheet(workbook, paymentsSheet, "Payments");
+      const outfile = XLSX.write(workbook, {
+        type: "base64",
+        bookType: "xlsx",
+      });
+
+      const filename = `payment-${month}-${year}.xlsx`;
+      const permissions = await askPermission();
+      if (!permissions.granted) {
+        return;
+      }
+      await saveFile(
+        filename,
+        outfile,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        permissions.directoryUri,
+      );
+      const migrationPayments = payments.filter(
+        (payment) => payment.type === "migration",
+      );
+
+      // Get list of payments with same to
+      const migrationPaymentsGrouped = migrationPayments.reduce(
+        (acc, payment) => {
+          const key = payment.to!.name;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(payment);
+          return acc;
+        },
+        {} as Record<string, Payments>,
+      );
+      for (const [to, payments] of Object.entries(migrationPaymentsGrouped)) {
+        const migrationWorkbook = XLSX.utils.book_new();
+        const sheet = XLSX.utils.aoa_to_sheet(
+          payments.map((payments) => [payments.connection.boxNumber]),
+        );
+        XLSX.utils.book_append_sheet(migrationWorkbook, sheet, to);
+        // Save the file
+        const migrationFilename = `migration-${to}-${month}-${year}.xlsx`;
+        const migrationOutfile = XLSX.write(migrationWorkbook, {
+          type: "base64",
+          bookType: "xlsx",
+        });
+        await saveFile(
+          migrationFilename,
+          migrationOutfile,
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          permissions.directoryUri,
+        );
+      }
+
+      Toast.show("File exported successfully");
+    } catch (error) {
+      console.error(error);
+      Toast.show("Failed to export file");
+    }
+  };
 
   const renderPayment = (info: ListRenderItemInfo<Payments[number]>) => {
     let description = `Paid ${info.item.customerPrice} for ${info.item.currentPack.name}`;
@@ -94,7 +167,7 @@ export default function History() {
       />
       {payments.length > 0 ? (
         <FlashList
-          data={payments}
+          data={payments.filter((payment) => payment.type === paymentType)}
           renderItem={renderPayment}
           estimatedItemSize={70}
           ItemSeparatorComponent={Divider}
@@ -155,6 +228,9 @@ export default function History() {
           )}
           onSelect={setYear}
         />
+        <Button mode="contained" onPress={exportData}>
+          Export
+        </Button>
       </Surface>
     </SafeAreaView>
   );

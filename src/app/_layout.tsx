@@ -6,11 +6,13 @@ import {
 } from "@react-navigation/native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Drawer } from "expo-router/drawer";
-import { useColorScheme } from "react-native";
+import { BackHandler, useColorScheme } from "react-native";
 import { adaptNavigationTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import { RootSiblingParent } from "react-native-root-siblings";
 import migrations from "../../drizzle/migrations";
+import { useEffect } from "react";
+import { router } from "expo-router";
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -30,6 +32,13 @@ const CombinedDarkTheme = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   useMigrations(db, migrations);
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", () => {
+      router.back();
+      return false;
+    });
+  }, []);
 
   return (
     <PaperProvider>
