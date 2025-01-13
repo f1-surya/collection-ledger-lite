@@ -2,8 +2,7 @@ import Dropdown from "@/components/drop-down";
 import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
 import { connectionsTable } from "@/db/schema";
-import i18n from "@/lib/i18";
-import i18 from "@/lib/i18";
+import { default as i18, default as i18n } from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
@@ -22,6 +21,7 @@ import {
   IconButton,
   Modal,
   Portal,
+  Searchbar,
   Surface,
   Text,
 } from "react-native-paper";
@@ -44,6 +44,7 @@ export default function Index() {
   >(null);
   const [selectedArea, setSelectedArea] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [searchString, setSearchString] = useState("");
   const colorScheme = useColorScheme();
 
   useEffect(() => {
@@ -68,8 +69,15 @@ export default function Index() {
         return !paid;
       });
     }
+    if (searchString.length > 0) {
+      filteredConnections = filteredConnections.filter(
+        (connection) =>
+          connection.name.toLowerCase().includes(searchString) ||
+          connection.boxNumber.toLowerCase().includes(searchString),
+      );
+    }
     setConnections(filteredConnections);
-  }, [data, selectedArea, selectedStatus]);
+  }, [data, selectedArea, selectedStatus, searchString]);
 
   const viewConnection = () => {
     if (!currConnection) return;
@@ -126,6 +134,12 @@ export default function Index() {
           ),
         }}
       />
+      <Searchbar
+        placeholder="Search..."
+        value={searchString}
+        onChangeText={(val) => setSearchString(val.toLowerCase())}
+        style={{ marginTop: 10 }}
+      />
       {connections.length === 0 && (
         <Text
           variant="titleMedium"
@@ -141,7 +155,7 @@ export default function Index() {
           <Card
             mode="elevated"
             onPress={() => setCurrConnection(item.item)}
-            style={{ margin: 5 }}
+            style={{ marginBottom: 10, marginHorizontal: 5 }}
           >
             <Card.Title
               title={item.item.name}
@@ -289,10 +303,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 15,
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    left: 0,
   },
   nameFilter: {
     width: "70%",

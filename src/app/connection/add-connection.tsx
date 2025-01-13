@@ -26,7 +26,7 @@ import { z } from "zod";
 
 const formSchema = z.object({
   boxNumber: z.string().min(10).toLowerCase(),
-  name: z.string(),
+  name: z.string().min(3),
   area: z.number(),
   phoneNumber: z.string().min(10),
   basePack: z.number(),
