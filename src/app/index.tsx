@@ -289,7 +289,7 @@ export default function Index() {
           onChange={setSelectedArea}
         />
         <Dropdown
-          data={["All", "Paid", "Unpaid"]}
+          data={["Paid", "Unpaid", "All"]}
           defaultValue={selectedStatus}
           onChange={setSelectedStatus}
         />

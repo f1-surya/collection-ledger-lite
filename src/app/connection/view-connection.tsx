@@ -39,6 +39,7 @@ export default function ViewConnection() {
         area: true,
       },
     }),
+    [id],
   );
 
   const markAsPaid = async () => {
