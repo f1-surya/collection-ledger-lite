@@ -5,14 +5,13 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
+import { useEffect } from "react";
 import { BackHandler, useColorScheme } from "react-native";
 import { adaptNavigationTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
-import { RootSiblingParent } from "react-native-root-siblings";
 import migrations from "../../drizzle/migrations";
-import { useEffect } from "react";
-import { router } from "expo-router";
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -45,19 +44,17 @@ export default function RootLayout() {
       <ThemeProvider
         value={colorScheme === "dark" ? CombinedDarkTheme : CombinedLightTheme}
       >
-        <RootSiblingParent>
-          <Drawer>
-            <Drawer.Screen name="index" options={{ title: "Connections" }} />
-            <Drawer.Screen
-              name="connection"
-              options={{
-                headerShown: false,
-                drawerItemStyle: { display: "none" },
-              }}
-            />
-            <Drawer.Screen name="history" options={{ title: "History" }} />
-          </Drawer>
-        </RootSiblingParent>
+        <Drawer>
+          <Drawer.Screen name="index" options={{ title: "Connections" }} />
+          <Drawer.Screen
+            name="connection"
+            options={{
+              headerShown: false,
+              drawerItemStyle: { display: "none" },
+            }}
+          />
+          <Drawer.Screen name="history" options={{ title: "History" }} />
+        </Drawer>
       </ThemeProvider>
     </PaperProvider>
   );

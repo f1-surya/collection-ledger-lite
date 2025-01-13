@@ -3,6 +3,7 @@ import { markConnectionAsPaid } from "@/db/connection-funcs";
 import { connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
 import { formatSqliteTimestamp } from "@/lib/time-utils";
+import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
@@ -19,7 +20,6 @@ import {
   List,
   Text,
 } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ViewConnection() {
@@ -47,7 +47,7 @@ export default function ViewConnection() {
       await markConnectionAsPaid(parseInt(id), data.basePack);
     } catch (e) {
       console.error(e);
-      Toast.show("Failed to mark as paid");
+      toast("Failed to mark as paid");
     }
   };
 

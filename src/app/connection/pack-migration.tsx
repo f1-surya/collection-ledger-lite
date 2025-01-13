@@ -1,13 +1,13 @@
 import { db } from "@/db";
 import { migratePack } from "@/db/connection-funcs";
 import { basePacksTable } from "@/db/schema";
+import toast from "@/lib/toast";
 import { ne } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Button, Checkbox, Divider, FAB, List, Text } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PackMigration() {
@@ -35,7 +35,7 @@ export default function PackMigration() {
       router.back();
     } catch (e) {
       console.error(e);
-      Toast.show("Failed to migrate pack");
+      toast("Failed to migrate pack");
     }
   };
 

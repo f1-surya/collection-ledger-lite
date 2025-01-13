@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile } from "@/lib/file-sytem";
 import i18n from "@/lib/i18";
+import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -16,7 +17,6 @@ import {
   Surface,
   Text,
 } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
 import XLSX from "xlsx";
@@ -127,10 +127,10 @@ export default function History() {
         );
       }
 
-      Toast.show("File exported successfully");
+      toast("File exported successfully");
     } catch (error) {
       console.error(error);
-      Toast.show("Failed to export file");
+      toast("Failed to export file");
     }
   };
 

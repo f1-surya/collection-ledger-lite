@@ -2,12 +2,12 @@ import FormTextInput from "@/components/form-text-input";
 import { db } from "@/db";
 import { basePacksTable } from "@/db/schema";
 import i18 from "@/lib/i18";
+import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -29,8 +29,8 @@ export default function AddPack() {
       router.back();
     } catch (error) {
       console.error(error);
-      // @ts-expect-error error is not typed
-      Toast.show(error.message);
+      // @ts-expect-error - Message will be there
+      toast(error.message);
     }
   };
 
