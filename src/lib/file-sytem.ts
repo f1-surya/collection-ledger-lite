@@ -1,4 +1,5 @@
 import * as FileSystem from "expo-file-system";
+import { File, Paths } from "expo-file-system/next";
 import { localStorage } from "./mmkv";
 import toast from "./toast";
 
@@ -6,7 +7,10 @@ import toast from "./toast";
  * Ask permission to access the media library
  * @returns {Promise<{granted: boolean, directoryUri: string}>}
  */
-export const askPermission = async () => {
+export const askPermission = async (): Promise<{
+  granted: boolean;
+  directoryUri: string;
+}> => {
   const uriFromLocalStorage = localStorage.getString("directoryUri");
   if (uriFromLocalStorage) {
     return { granted: true, directoryUri: uriFromLocalStorage };
@@ -43,4 +47,11 @@ export const saveFile = async (
   await FileSystem.writeAsStringAsync(fileUri, base64, {
     encoding: FileSystem.EncodingType.Base64,
   });
+};
+
+export const saveFileLocal = async (fileName: string, base64: string) => {
+  const file = new File(Paths.cache, fileName);
+  file.create();
+  file.write(base64);
+  return file.uri;
 };

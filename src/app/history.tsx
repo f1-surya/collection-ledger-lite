@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { paymentsTable } from "@/db/schema";
-import { askPermission, saveFile } from "@/lib/file-sytem";
+import { askPermission, saveFile, saveFileLocal } from "@/lib/file-sytem";
 import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
@@ -20,6 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
 import XLSX from "xlsx";
+import Share from "react-native-share";
 
 const today = new Date();
 
@@ -85,12 +86,19 @@ export default function History() {
       if (!permissions.granted) {
         return;
       }
-      await saveFile(
-        filename,
-        outfile,
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        permissions.directoryUri,
-      );
+      const files = [];
+      try {
+        await saveFile(
+          filename,
+          outfile,
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          permissions.directoryUri,
+        );
+      } catch {
+        console.log("Save to downloads failed. Invoking share...");
+        const uri = await saveFileLocal(filename, outfile);
+        files.push(uri);
+      }
       const migrationPayments = payments.filter(
         (payment) => payment.type === "migration",
       );
@@ -114,20 +122,29 @@ export default function History() {
         );
         XLSX.utils.book_append_sheet(migrationWorkbook, sheet, to);
         // Save the file
-        const migrationFilename = `migration-${to}-${month}-${year}.xlsx`;
+        const migrationFilename =
+          `migration-${to}-${month}-${year}.xlsx`.replaceAll(" ", "-");
         const migrationOutfile = XLSX.write(migrationWorkbook, {
           type: "base64",
           bookType: "xlsx",
         });
-        await saveFile(
-          migrationFilename,
-          migrationOutfile,
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          permissions.directoryUri,
-        );
+        try {
+          await saveFile(
+            migrationFilename,
+            migrationOutfile,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            permissions.directoryUri,
+          );
+        } catch {
+          const uri = await saveFileLocal(migrationFilename, migrationOutfile);
+          files.push(uri);
+        }
+      }
+      if (files.length > 0) {
+        Share.open({ urls: files });
       }
 
-      toast("File exported successfully");
+      toast("Files exported successfully");
     } catch (error) {
       console.error(error);
       toast("Failed to export file");
