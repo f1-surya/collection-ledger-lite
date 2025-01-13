@@ -1,6 +1,6 @@
 import * as FileSystem from "expo-file-system";
-import Toast from "react-native-root-toast";
 import { localStorage } from "./mmkv";
+import toast from "./toast";
 
 /**
  * Ask permission to access the media library
@@ -15,7 +15,7 @@ export const askPermission = async () => {
   const { granted, directoryUri } =
     await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
   if (!granted) {
-    Toast.show("Permission to access media library is required");
+    toast("Permission to access media library is required");
     return { granted, directoryUri: "" };
   }
   localStorage.set("directoryUri", directoryUri);

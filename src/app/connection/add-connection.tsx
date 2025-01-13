@@ -2,15 +2,17 @@ import FormTextInput from "@/components/form-text-input";
 import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
+import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, useColorScheme, View } from "react-native";
 import {
+  Appbar,
   Button,
   Dialog,
   Icon,
@@ -18,14 +20,13 @@ import {
   Text,
   TextInput,
 } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
 import { z } from "zod";
 
 const formSchema = z.object({
   boxNumber: z.string().min(10).toLowerCase(),
-  name: z.string(),
+  name: z.string().min(3),
   area: z.number(),
   phoneNumber: z.string().min(10),
   basePack: z.number(),
@@ -75,7 +76,7 @@ export default function AddConnection() {
       });
       if (id) {
         if (prevConnection && prevConnection.id !== parseInt(id)) {
-          Toast.show(i18n.get("duplicateSmc"));
+          toast(i18n.get("duplicateSmc"));
           return;
         } else {
           await db
@@ -85,7 +86,7 @@ export default function AddConnection() {
         }
       } else {
         if (prevConnection) {
-          Toast.show(i18n.get("duplicateSmc"));
+          toast(i18n.get("duplicateSmc"));
           return;
         } else {
           await db.insert(connectionsTable).values(data);
@@ -94,16 +95,29 @@ export default function AddConnection() {
 
       reset();
       router.back();
-      Toast.show(i18n.get("savedConnection"));
+      toast(i18n.get("savedConnection"));
     } catch (err) {
       console.error(err);
       // @ts-expect-error Message will be there
-      Toast.show(err.message);
+      toast(err.message);
     }
   };
 
   return (
     <SafeAreaView style={styles.root}>
+      <Stack.Screen
+        name="/connection/add-connection"
+        options={{
+          title: "Add connection",
+          headerLeft: (props) => (
+            <Appbar.BackAction
+              {...props}
+              onPress={router.back}
+              style={{ margin: 0, width: "auto", marginRight: 25 }}
+            />
+          ),
+        }}
+      />
       <FormTextInput
         name="name"
         placeHolder={i18n.get("customerName")}
