@@ -23,7 +23,7 @@ export default function FormTextInput({
         <View>
           <TextInput
             label={placeHolder}
-            value={value}
+            value={value?.toString()}
             onChangeText={onChange}
             onBlur={onBlur}
             mode="outlined"

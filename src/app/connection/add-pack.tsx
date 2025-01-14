@@ -4,10 +4,12 @@ import { basePacksTable } from "@/db/schema";
 import i18 from "@/lib/i18";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
+import { eq } from "drizzle-orm";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { StyleSheet } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Appbar, Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -18,13 +20,37 @@ const packSchema = z.object({
 });
 
 export default function AddPack() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
   const { control, handleSubmit, reset } = useForm<z.infer<typeof packSchema>>({
     resolver: zodResolver(packSchema),
   });
 
+  useEffect(() => {
+    if (id) {
+      db.query.basePacksTable
+        .findFirst({ where: eq(basePacksTable.id, parseInt(id)) })
+        .then((data) => {
+          reset(data);
+        });
+    } else {
+      reset({
+        name: "",
+        lcoPrice: undefined,
+        customerPrice: undefined,
+      });
+    }
+  }, [id]);
+
   const savePack = async (data: z.infer<typeof packSchema>) => {
     try {
-      await db.insert(basePacksTable).values(data);
+      if (id) {
+        await db
+          .update(basePacksTable)
+          .set(data)
+          .where(eq(basePacksTable.id, parseInt(id)));
+      } else {
+        await db.insert(basePacksTable).values(data);
+      }
       reset();
       router.back();
     } catch (error) {
@@ -36,6 +62,19 @@ export default function AddPack() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Stack.Screen
+        name="/connection/add-pack"
+        options={{
+          title: "Add connection",
+          headerLeft: (props) => (
+            <Appbar.BackAction
+              {...props}
+              onPress={router.back}
+              style={{ margin: 0, width: "auto", marginRight: 25 }}
+            />
+          ),
+        }}
+      />
       <Text variant="titleSmall">{i18.get("createPackTitle")}</Text>
       <FormTextInput
         name="name"

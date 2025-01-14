@@ -54,6 +54,10 @@ export default function RootLayout() {
             }}
           />
           <Drawer.Screen name="history" options={{ title: "History" }} />
+          <Drawer.Screen
+            name="packs"
+            options={{ title: "Base packs", drawerLabel: "Base packs" }}
+          />
         </Drawer>
       </ThemeProvider>
     </PaperProvider>
