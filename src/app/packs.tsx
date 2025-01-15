@@ -73,7 +73,7 @@ export default function Packs() {
         >
           <Dialog.Title>{i18n.get("warning")} !!!</Dialog.Title>
           <Dialog.Content>
-            <Text>{i18n.get("packWarning")}</Text>
+            <Text>{i18n.get("deleteWarning")}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setCurrPack(undefined)}>Cancel</Button>

@@ -58,6 +58,10 @@ export default function RootLayout() {
             name="packs"
             options={{ title: "Base packs", drawerLabel: "Base packs" }}
           />
+          <Drawer.Screen
+            name="areas"
+            options={{ title: "Areas", drawerLabel: "Areas" }}
+          />
         </Drawer>
       </ThemeProvider>
     </PaperProvider>

@@ -4,22 +4,14 @@ import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, useColorScheme, View } from "react-native";
-import {
-  Appbar,
-  Button,
-  Dialog,
-  Icon,
-  Portal,
-  Text,
-  TextInput,
-} from "react-native-paper";
+import { Appbar, Button, Icon, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
 import { z } from "zod";
@@ -38,11 +30,13 @@ export default function AddConnection() {
   >({
     resolver: zodResolver(formSchema),
   });
-  const { data: packs } = useLiveQuery(db.select().from(basePacksTable));
-  const { data: areas } = useLiveQuery(db.select().from(areasTable));
+  const { data: packs } = useLiveQuery(
+    db.select().from(basePacksTable).orderBy(asc(basePacksTable.name)),
+  );
+  const { data: areas } = useLiveQuery(
+    db.select().from(areasTable).orderBy(asc(areasTable.name)),
+  );
   const colorScheme = useColorScheme();
-  const [addArea, setAddArea] = useState(false);
-  const [areaName, setAreaName] = useState("");
   const { id } = useLocalSearchParams<{ id?: string }>();
 
   useEffect(() => {
@@ -61,13 +55,6 @@ export default function AddConnection() {
     };
     fetchConnection();
   }, [id]);
-
-  const saveArea = async () => {
-    const res = await db.insert(areasTable).values({ name: areaName });
-    setValue("area", res.lastInsertRowId);
-    setAreaName("");
-    setAddArea(false);
-  };
 
   const saveConnection = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -178,11 +165,10 @@ export default function AddConnection() {
             </View>
           )}
         />
-
         <Button
           mode="outlined"
           style={styles.addButton}
-          onPress={() => setAddArea(true)}
+          onPress={() => router.push("/connection/add-area")}
         >
           <Plus color={colorScheme === "dark" ? "white" : "black"} size={25} />
         </Button>
@@ -247,24 +233,6 @@ export default function AddConnection() {
       <Button onPress={handleSubmit(saveConnection)} mode="contained">
         {i18n.get("save")}
       </Button>
-      <Portal>
-        <Dialog visible={addArea} onDismiss={() => setAddArea(false)}>
-          <Dialog.Title>{i18n.get("addArea")}</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label={i18n.get("areaName")}
-              mode="outlined"
-              value={areaName}
-              onChangeText={setAreaName}
-              autoFocus
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setAddArea(false)}>Cancel</Button>
-            <Button onPress={saveArea}>Save</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </SafeAreaView>
   );
 }
