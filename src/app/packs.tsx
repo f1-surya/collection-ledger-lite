@@ -1,0 +1,104 @@
+import { db } from "@/db";
+import { basePacksTable, connectionsTable } from "@/db/schema";
+import i18n from "@/lib/i18";
+import toast from "@/lib/toast";
+import { FlashList } from "@shopify/flash-list";
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, StyleSheet, ToastAndroid } from "react-native";
+import {
+  Button,
+  Dialog,
+  Divider,
+  FAB,
+  List,
+  Portal,
+  Text,
+} from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+export default function Packs() {
+  const { data } = useLiveQuery(db.query.basePacksTable.findMany());
+  const [currPack, setCurrPack] = useState<number | undefined>();
+
+  const deletePack = async () => {
+    try {
+      const connections = await db.query.connectionsTable.findMany({
+        where: eq(connectionsTable.basePack, currPack!),
+      });
+      if (connections.length > 0) {
+        toast(i18n.get("migrateBeforeDelete"), ToastAndroid.LONG);
+      } else {
+        await db.delete(basePacksTable).where(eq(basePacksTable.id, currPack!));
+        toast("Successfully deleted");
+      }
+      setCurrPack(undefined);
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong");
+    }
+  };
+
+  return (
+    <SafeAreaView style={style.root}>
+      <FlashList
+        data={data}
+        estimatedItemSize={50}
+        ItemSeparatorComponent={Divider}
+        renderItem={(info) => (
+          <List.Item
+            title={info.item.name}
+            description={`LCO price: ${info.item.lcoPrice} - MRP: ${info.item.customerPrice}`}
+            left={(props) => <List.Icon {...props} icon="package" />}
+            onPress={() =>
+              router.push({
+                pathname: "/connection/add-pack",
+                params: { id: info.item.id },
+              })
+            }
+            right={(props) => (
+              <Pressable {...props} onPress={() => setCurrPack(info.item.id)}>
+                <List.Icon icon="delete-outline" color="red" />
+              </Pressable>
+            )}
+          />
+        )}
+      />
+      <Portal>
+        <Dialog
+          visible={currPack !== undefined}
+          onDismiss={() => setCurrPack(undefined)}
+        >
+          <Dialog.Title>{i18n.get("warning")} !!!</Dialog.Title>
+          <Dialog.Content>
+            <Text>{i18n.get("deleteWarning")}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setCurrPack(undefined)}>Cancel</Button>
+            <Button onPress={deletePack}>Continue</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      <FAB
+        icon="plus"
+        style={style.fab}
+        onPress={() => router.push("/connection/add-pack")}
+      />
+    </SafeAreaView>
+  );
+}
+
+const style = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  fab: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    borderRadius: 9999,
+    margin: 10,
+  },
+});
