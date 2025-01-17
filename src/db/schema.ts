@@ -71,18 +71,49 @@ export const basePackRelations = relations(basePacksTable, ({ many }) => ({
   connection: many(connectionsTable),
 }));
 
-export const addonsTable = t.sqliteTable(
-  "addons_table",
+export const channelsTable = t.sqliteTable(
+  "channels_table",
   {
     id: t.int().primaryKey({ autoIncrement: true }),
     name: t.text().notNull(),
-    connection: t.int().references(() => connectionsTable.id),
+    lcoPrice: t.int().notNull(),
+    customerPrice: t.int().notNull(),
   },
   () => [],
 );
 
-export const addonRelations = relations(addonsTable, ({ many }) => ({
-  connection: many(connectionsTable),
+export const channelsRelations = relations(channelsTable, ({ one }) => ({
+  addon: one(addonsTable, {
+    fields: [channelsTable.id],
+    references: [addonsTable.channel],
+  }),
+}));
+
+export const addonsTable = t.sqliteTable(
+  "addons_table",
+  {
+    id: t.int().primaryKey({ autoIncrement: true }),
+    channel: t
+      .int()
+      .references(() => channelsTable.id)
+      .notNull(),
+    connection: t
+      .int()
+      .references(() => connectionsTable.id)
+      .notNull(),
+  },
+  (table) => [t.index("connectionIndex").on(table.connection)],
+);
+
+export const addonRelations = relations(addonsTable, ({ one }) => ({
+  connection: one(connectionsTable, {
+    fields: [addonsTable.connection],
+    references: [connectionsTable.id],
+  }),
+  channel: one(channelsTable, {
+    fields: [addonsTable.channel],
+    references: [channelsTable.id],
+  }),
 }));
 
 export const paymentsTable = t.sqliteTable(
@@ -112,7 +143,7 @@ export const paymentsTable = t.sqliteTable(
     customerPrice: t.int().notNull(),
     lcoPrice: t.int().notNull(),
   },
-  () => [],
+  (table) => [t.index("month").on(table.month), t.index("year").on(table.year)],
 );
 
 export const paymentRelations = relations(paymentsTable, ({ one }) => ({

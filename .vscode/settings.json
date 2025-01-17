@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["collectionledger", "Tamagui"]
+  "cSpell.words": ["collectionledger", "Tamagui"],
+  "oxc.enable": true
 }

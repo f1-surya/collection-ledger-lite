@@ -1,6 +1,11 @@
 import { and, eq } from "drizzle-orm";
 import { db } from ".";
-import { basePacksTable, connectionsTable, paymentsTable } from "./schema";
+import {
+  addonsTable,
+  basePacksTable,
+  connectionsTable,
+  paymentsTable,
+} from "./schema";
 import { toSqliteTimestamp } from "./columns.helpers";
 
 /**
@@ -13,14 +18,31 @@ export const markConnectionAsPaid = async (
   currentPack: typeof basePacksTable.$inferSelect,
 ) => {
   const today = new Date();
+  let lcoPrice = currentPack.lcoPrice;
+  let customerPrice = currentPack.customerPrice;
+
+  const addons = await db.query.addonsTable.findMany({
+    where: eq(addonsTable.connection, connectionId),
+    with: {
+      channel: true,
+    },
+  });
+
+  if (addons.length > 0) {
+    for (const addon of addons) {
+      lcoPrice += addon.channel.lcoPrice;
+      customerPrice += addon.channel.customerPrice;
+    }
+  }
+
   await Promise.all([
     db.insert(paymentsTable).values({
       connection: connectionId,
       currentPack: currentPack.id,
       month: today.getMonth() + 1,
       year: today.getFullYear(),
-      lcoPrice: currentPack.lcoPrice,
-      customerPrice: currentPack.customerPrice,
+      lcoPrice,
+      customerPrice,
     }),
     db
       .update(connectionsTable)

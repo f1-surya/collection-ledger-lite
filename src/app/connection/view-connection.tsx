@@ -1,10 +1,10 @@
 import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
-import { connectionsTable } from "@/db/schema";
+import { addonsTable, connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
 import { formatSqliteTimestamp } from "@/lib/time-utils";
 import toast from "@/lib/toast";
-import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -28,16 +28,16 @@ export default function ViewConnection() {
     db.query.connectionsTable.findFirst({
       where: eq(connectionsTable.id, parseInt(id)),
       with: {
-        payments: {
-          orderBy: (paymentsTable, { desc }) => [desc(paymentsTable.date)],
-          with: {
-            to: true,
-            currentPack: true,
-          },
-        },
         basePack: true,
         area: true,
       },
+    }),
+    [id],
+  );
+  const { data: addons } = useLiveQuery(
+    db.query.addonsTable.findMany({
+      where: eq(addonsTable.connection, parseInt(id)),
+      with: { channel: true },
     }),
     [id],
   );
@@ -57,28 +57,6 @@ export default function ViewConnection() {
       pathname: "/connection/add-connection",
       params: { id },
     });
-  };
-
-  type Connection = NonNullable<typeof data>;
-  type Payment = Connection["payments"][number];
-
-  const renderPayments = (payment: ListRenderItemInfo<Payment>) => {
-    let title = `Payment for ${payment.item.currentPack.name}`;
-    let icon = "receipt";
-
-    if (payment.item.type === "migration") {
-      title = `Migration from ${payment.item.currentPack.name} to ${payment.item.to?.name}`;
-      icon = "sync";
-    }
-
-    return (
-      <List.Item
-        title={title}
-        titleNumberOfLines={2}
-        description={formatSqliteTimestamp(payment.item.date)}
-        left={(props) => <List.Icon {...props} icon={icon} />}
-      />
-    );
   };
 
   return (
@@ -119,6 +97,22 @@ export default function ViewConnection() {
             {data?.lastPayment && formatSqliteTimestamp(data.lastPayment)}
           </Text>
           <Divider />
+          <View style={styles.prices}>
+            <Text style={styles.price}>
+              LCO price: ₹
+              {(data?.basePack.lcoPrice ?? 0) +
+                addons.reduce((acc, item) => acc + item.channel.lcoPrice, 0)}
+            </Text>
+            <Text style={styles.price}>
+              MRP: ₹
+              {(data?.basePack.customerPrice ?? 0) +
+                addons.reduce(
+                  (acc, item) => acc + item.channel.customerPrice,
+                  0,
+                )}
+            </Text>
+          </View>
+          <Divider />
         </Card.Content>
         <Card.Actions>
           <Button
@@ -143,17 +137,42 @@ export default function ViewConnection() {
           </Button>
         </Card.Actions>
       </Card>
-      {(data?.payments ?? []).length > 0 && (
-        <View style={styles.paymentsHeader}>
-          <Icon source="history" size={20} />
-          <Text variant="titleMedium">{i18n.get("history")}</Text>
-        </View>
+      <View style={styles.paymentsHeader}>
+        <Icon source="history" size={20} />
+        <Text variant="titleMedium">Addons</Text>
+        <IconButton
+          icon="plus"
+          mode="contained"
+          size={20}
+          style={{ marginLeft: "auto" }}
+          onPress={() =>
+            router.push({
+              pathname: "/connection/add-addons",
+              params: { connection: data!.id },
+            })
+          }
+        />
+      </View>
+      {addons.length > 0 ? (
+        <FlashList
+          data={addons}
+          renderItem={({ item }) => (
+            <List.Item
+              title={item.channel.name}
+              left={(props) => <List.Icon {...props} icon="album" />}
+              description={`LCO price: ₹${item.channel.lcoPrice} - MRP: ₹${item.channel.customerPrice}`}
+            />
+          )}
+          estimatedItemSize={60}
+        />
+      ) : (
+        <Text
+          variant="bodyMedium"
+          style={{ textAlign: "center", marginTop: 10 }}
+        >
+          {i18n.get("noAddons")}
+        </Text>
       )}
-      <FlashList
-        data={data?.payments}
-        renderItem={renderPayments}
-        estimatedItemSize={100}
-      />
     </SafeAreaView>
   );
 }
@@ -169,5 +188,15 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: "center",
     justifyContent: "flex-start",
+  },
+  prices: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  price: {
+    fontWeight: "bold",
+    color: "fuchsia",
   },
 });

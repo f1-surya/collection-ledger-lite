@@ -1,11 +1,18 @@
 import Dropdown from "@/components/drop-down";
 import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
-import { connectionsTable } from "@/db/schema";
+import {
+  addonsTable,
+  areasTable,
+  basePacksTable,
+  channelsTable,
+  connectionsTable,
+} from "@/db/schema";
 import { default as i18, default as i18n } from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
+import { eq, sql } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
@@ -29,13 +36,45 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const { data } = useLiveQuery(
-    db.query.connectionsTable.findMany({
-      with: {
-        area: true,
-        basePack: true,
-      },
-      orderBy: connectionsTable.name,
-    }),
+    db
+      .select({
+        id: connectionsTable.id,
+        name: connectionsTable.name,
+        boxNumber: connectionsTable.boxNumber,
+        area: areasTable.name,
+        phoneNumber: connectionsTable.phoneNumber,
+        lastPayment: connectionsTable.lastPayment,
+        basePack: { ...basePacksTable },
+        addonPrices: sql<number>`
+      COALESCE(
+        (
+          SELECT SUM(${channelsTable.customerPrice})
+          FROM ${addonsTable}
+          JOIN ${channelsTable} ON ${addonsTable.channel} = ${channelsTable.id}
+          WHERE ${addonsTable.connection} = ${connectionsTable.id}
+        ),
+        0
+      )
+    `,
+        addonPricesLco: sql<number>`
+      COALESCE(
+        (
+          SELECT SUM(${channelsTable.lcoPrice})
+          FROM ${addonsTable}
+          JOIN ${channelsTable} ON ${addonsTable.channel} = ${channelsTable.id}
+          WHERE ${addonsTable.connection} = ${connectionsTable.id}
+        ),
+        0
+      )
+    `,
+      })
+      .from(connectionsTable)
+      .innerJoin(
+        basePacksTable,
+        eq(connectionsTable.basePack, basePacksTable.id),
+      )
+      .innerJoin(areasTable, eq(connectionsTable.area, areasTable.id))
+      .orderBy(connectionsTable.name),
   );
   const { data: areas } = useLiveQuery(db.query.areasTable.findMany());
   const [connections, setConnections] = useState<typeof data>([]);
@@ -51,7 +90,7 @@ export default function Index() {
     let filteredConnections = [...data];
     if (selectedArea !== "All") {
       filteredConnections = filteredConnections.filter(
-        (connection) => connection.area.name === selectedArea,
+        (connection) => connection.area === selectedArea,
       );
     }
     if (selectedStatus !== "All") {
@@ -151,16 +190,16 @@ export default function Index() {
       <FlashList
         data={connections}
         estimatedItemSize={100}
-        renderItem={(item) => (
+        renderItem={({ item }) => (
           <Card
             mode="elevated"
-            onPress={() => setCurrConnection(item.item)}
+            onPress={() => setCurrConnection(item)}
             style={{ marginBottom: 10, marginHorizontal: 5 }}
           >
             <Card.Title
-              title={item.item.name}
+              title={item.name}
               titleVariant="titleLarge"
-              subtitle={`SMC # ${item.item.boxNumber}  :  Pack: ${item.item.basePack.name}`}
+              subtitle={`SMC # ${item.boxNumber}  :  Pack: ${item.basePack.name}`}
               subtitleVariant="titleSmall"
               right={(props) => (
                 <View
@@ -170,8 +209,8 @@ export default function Index() {
                     height: 15,
                     borderRadius: 15,
                     backgroundColor:
-                      item.item.lastPayment &&
-                      isThisMonth(new Date(item.item.lastPayment))
+                      item.lastPayment &&
+                      isThisMonth(new Date(item.lastPayment))
                         ? "green"
                         : "red",
                     marginRight: 20,
@@ -181,10 +220,10 @@ export default function Index() {
             />
             <Card.Content style={styles.cardContent}>
               <Text style={styles.prices}>
-                LCO price: ₹{item.item.basePack.lcoPrice}
+                LCO price: ₹{item.basePack.lcoPrice + item.addonPricesLco}
               </Text>
               <Text style={styles.prices}>
-                MRP: ₹{item.item.basePack.customerPrice}
+                MRP: ₹{item.basePack.customerPrice + item.addonPrices}
               </Text>
             </Card.Content>
           </Card>
@@ -225,7 +264,7 @@ export default function Index() {
             </Text>
             <View style={styles.address}>
               <Icon source="map-marker" size={20} />
-              <Text variant="bodyLarge">{currConnection?.area.name}</Text>
+              <Text variant="bodyLarge">{currConnection?.area}</Text>
             </View>
             <View
               style={[
@@ -261,10 +300,14 @@ export default function Index() {
             </View>
             <View style={[styles.cardContent, { marginTop: 10 }]}>
               <Text style={styles.prices}>
-                LCO price: ₹{currConnection?.basePack.lcoPrice}
+                LCO price: ₹
+                {(currConnection?.basePack.lcoPrice ?? 0) +
+                  (currConnection?.addonPricesLco ?? 0)}
               </Text>
               <Text style={styles.prices}>
-                MRP: ₹{currConnection?.basePack.customerPrice}
+                MRP: ₹
+                {(currConnection?.basePack.customerPrice ?? 0) +
+                  (currConnection?.addonPrices ?? 0)}
               </Text>
             </View>
             <View style={styles.actions}>
