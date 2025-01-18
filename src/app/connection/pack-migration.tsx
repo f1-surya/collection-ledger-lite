@@ -21,6 +21,7 @@ export default function PackMigration() {
       .from(basePacksTable)
       .where(ne(basePacksTable.id, parseInt(currentPack)))
       .orderBy(basePacksTable.name),
+    [currentPack],
   );
   const [selectedPack, setSelectedPack] = useState<number | null>(null);
 
