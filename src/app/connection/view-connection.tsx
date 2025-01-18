@@ -1,3 +1,4 @@
+import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
 import { addonsTable, connectionsTable } from "@/db/schema";
@@ -9,7 +10,8 @@ import { isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import {
   Appbar,
   Button,
@@ -41,6 +43,7 @@ export default function ViewConnection() {
     }),
     [id],
   );
+  const [currAddon, setCurrAddon] = useState<number | undefined>();
 
   const markAsPaid = async () => {
     if (!data?.basePack) return;
@@ -57,6 +60,17 @@ export default function ViewConnection() {
       pathname: "/connection/add-connection",
       params: { id },
     });
+  };
+
+  const deleteAddon = async (id: number) => {
+    try {
+      await db.delete(addonsTable).where(eq(addonsTable.id, id));
+      toast("Successfully deleted");
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong");
+    }
+    setCurrAddon(undefined);
   };
 
   return (
@@ -161,8 +175,14 @@ export default function ViewConnection() {
               title={item.channel.name}
               left={(props) => <List.Icon {...props} icon="album" />}
               description={`LCO price: ₹${item.channel.lcoPrice} - MRP: ₹${item.channel.customerPrice}`}
+              right={(props) => (
+                <Pressable {...props} onPress={() => setCurrAddon(item.id)}>
+                  <List.Icon color="red" icon="delete-outline" />
+                </Pressable>
+              )}
             />
           )}
+          ItemSeparatorComponent={Divider}
           estimatedItemSize={60}
         />
       ) : (
@@ -173,6 +193,11 @@ export default function ViewConnection() {
           {i18n.get("noAddons")}
         </Text>
       )}
+      <DeleteWarning
+        open={Boolean(currAddon)}
+        onClose={() => setCurrAddon(undefined)}
+        onConfirm={() => deleteAddon(currAddon!)}
+      />
     </SafeAreaView>
   );
 }

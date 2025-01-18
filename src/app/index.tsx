@@ -81,19 +81,19 @@ export default function Index() {
   const [currConnection, setCurrConnection] = useState<
     (typeof data)[number] | null
   >(null);
-  const [selectedArea, setSelectedArea] = useState("All");
-  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedArea, setSelectedArea] = useState("Area");
+  const [selectedStatus, setSelectedStatus] = useState("Status");
   const [searchString, setSearchString] = useState("");
   const colorScheme = useColorScheme();
 
   useEffect(() => {
     let filteredConnections = [...data];
-    if (selectedArea !== "All") {
+    if (selectedArea !== "Area") {
       filteredConnections = filteredConnections.filter(
         (connection) => connection.area === selectedArea,
       );
     }
-    if (selectedStatus !== "All") {
+    if (selectedStatus !== "Status") {
       filteredConnections = filteredConnections.filter((connection) => {
         let paid = false;
         if (
@@ -327,12 +327,12 @@ export default function Index() {
       </Portal>
       <Surface style={styles.filters}>
         <Dropdown
-          data={areas ? [...areas.map((area) => area.name), "All"] : []}
+          data={areas ? [...areas.map((area) => area.name), "Area"] : []}
           defaultValue={selectedArea}
           onChange={setSelectedArea}
         />
         <Dropdown
-          data={["Paid", "Unpaid", "All"]}
+          data={["Paid", "Unpaid", "Status"]}
           defaultValue={selectedStatus}
           onChange={setSelectedStatus}
         />
