@@ -62,6 +62,10 @@ export default function RootLayout() {
             name="areas"
             options={{ title: "Areas", drawerLabel: "Areas" }}
           />
+          <Drawer.Screen
+            name="channels"
+            options={{ title: "Channels", drawerLabel: "Channels" }}
+          />
         </Drawer>
       </ThemeProvider>
     </PaperProvider>

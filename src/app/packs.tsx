@@ -1,3 +1,4 @@
+import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { basePacksTable, connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
@@ -8,15 +9,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, ToastAndroid } from "react-native";
-import {
-  Button,
-  Dialog,
-  Divider,
-  FAB,
-  List,
-  Portal,
-  Text,
-} from "react-native-paper";
+import { Divider, FAB, List } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Packs() {
@@ -66,21 +59,11 @@ export default function Packs() {
           />
         )}
       />
-      <Portal>
-        <Dialog
-          visible={currPack !== undefined}
-          onDismiss={() => setCurrPack(undefined)}
-        >
-          <Dialog.Title>{i18n.get("warning")} !!!</Dialog.Title>
-          <Dialog.Content>
-            <Text>{i18n.get("deleteWarning")}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setCurrPack(undefined)}>Cancel</Button>
-            <Button onPress={deletePack}>Continue</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <DeleteWarning
+        open={currPack !== undefined}
+        onClose={() => setCurrPack(undefined)}
+        onConfirm={deletePack}
+      />
       <FAB
         icon="plus"
         style={style.fab}
