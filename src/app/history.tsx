@@ -1,35 +1,36 @@
 import { db } from "@/db";
 import { paymentsTable } from "@/db/schema";
-import { askPermission, saveFile, saveFileLocal } from "@/lib/file-sytem";
+import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
 import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
-import { and, eq } from "drizzle-orm";
+import { format, startOfMonth } from "date-fns";
+import { and, gte, lte } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useEffect, useState } from "react";
-import { StyleSheet, useColorScheme, View } from "react-native";
+import { useState } from "react";
+import { StyleSheet } from "react-native";
 import {
   Button,
   Divider,
-  Icon,
   List,
   SegmentedButtons,
   Surface,
   Text,
 } from "react-native-paper";
+import { DatePickerModal } from "react-native-paper-dates";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SelectDropdown from "react-native-select-dropdown";
-import XLSX from "xlsx";
 import Share from "react-native-share";
-
-const today = new Date();
+import XLSX from "xlsx";
 
 export default function History() {
   const [paymentType, setPaymentType] = useState<"payment" | "migration">(
     "payment",
   );
-  const [month, setMonth] = useState(today.getMonth() + 1);
-  const [year, setYear] = useState(today.getFullYear());
+  const [open, setOpen] = useState(false);
+  const [dates, setDates] = useState({
+    startDate: startOfMonth(new Date()),
+    endDate: new Date(),
+  });
   const { data } = useLiveQuery(
     db.query.paymentsTable.findMany({
       with: {
@@ -37,40 +38,21 @@ export default function History() {
         currentPack: true,
         to: true,
       },
-      where: and(eq(paymentsTable.month, month), eq(paymentsTable.year, year)),
+      where: and(
+        gte(paymentsTable.date, dates.startDate.getTime()),
+        lte(paymentsTable.date, dates.endDate.getTime()),
+      ),
+      orderBy: paymentsTable.date,
     }),
+    [dates],
   );
   type Payments = NonNullable<typeof data>;
-  const [payments, setPayments] = useState<Payments>([]);
-  const theme = useColorScheme();
-
-  useEffect(() => {
-    if (month !== today.getMonth() + 1 || year !== today.getFullYear()) {
-      db.query.paymentsTable
-        .findMany({
-          with: {
-            connection: true,
-            currentPack: true,
-            to: true,
-          },
-          where: and(
-            eq(paymentsTable.month, month),
-            eq(paymentsTable.year, year),
-          ),
-        })
-        .then((data) => {
-          setPayments(data);
-        });
-    } else if (data) {
-      setPayments(data);
-    }
-  }, [data, month, year]);
 
   const exportData = async () => {
     try {
       const workbook = XLSX.utils.book_new();
       const paymentsSheet = XLSX.utils.aoa_to_sheet(
-        payments
+        data
           .filter((payment) => payment.type === "payment")
           .map((payment) => payment.connection.boxNumber)
           .map((no) => [no]),
@@ -81,7 +63,7 @@ export default function History() {
         bookType: "xlsx",
       });
 
-      const filename = `payment-${month}-${year}.xlsx`;
+      const filename = `payment-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.xlsx`;
       const permissions = await askPermission();
       if (!permissions.granted) {
         return;
@@ -99,7 +81,7 @@ export default function History() {
         const uri = await saveFileLocal(filename, outfile);
         files.push(uri);
       }
-      const migrationPayments = payments.filter(
+      const migrationPayments = data.filter(
         (payment) => payment.type === "migration",
       );
 
@@ -123,7 +105,10 @@ export default function History() {
         XLSX.utils.book_append_sheet(migrationWorkbook, sheet, to);
         // Save the file
         const migrationFilename =
-          `migration-${to}-${month}-${year}.xlsx`.replaceAll(" ", "-");
+          `migration-${to}-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.xlsx`.replaceAll(
+            " ",
+            "-",
+          );
         const migrationOutfile = XLSX.write(migrationWorkbook, {
           type: "base64",
           bookType: "xlsx",
@@ -182,9 +167,9 @@ export default function History() {
         ]}
         style={{ margin: 10 }}
       />
-      {payments.length > 0 ? (
+      {data.length > 0 ? (
         <FlashList
-          data={payments.filter((payment) => payment.type === paymentType)}
+          data={data.filter((payment) => payment.type === paymentType)}
           renderItem={renderPayment}
           estimatedItemSize={70}
           ItemSeparatorComponent={Divider}
@@ -195,60 +180,32 @@ export default function History() {
         </Text>
       )}
       <Surface style={styles.bottomBar} elevation={4}>
-        <SelectDropdown
-          data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-          renderButton={(item, isOpened) => (
-            <View style={styles.dropDownButton}>
-              <Text>{month}</Text>
-              <Icon
-                source={isOpened ? "chevron-up" : "chevron-down"}
-                size={25}
-              />
-            </View>
-          )}
-          renderItem={(item, _index, isSelected) => (
-            <View
-              style={
-                theme === "dark"
-                  ? styles.dropdownItemDark
-                  : styles.dropdownItemLight
-              }
-            >
-              <Text>{item}</Text>
-              {isSelected && <Icon source="check" size={20} />}
-            </View>
-          )}
-          onSelect={setMonth}
-        />
-        <SelectDropdown
-          data={[2024, 2025]}
-          renderButton={(item, isOpened) => (
-            <View style={styles.dropDownButton}>
-              <Text>{year}</Text>
-              <Icon
-                source={isOpened ? "chevron-up" : "chevron-down"}
-                size={25}
-              />
-            </View>
-          )}
-          renderItem={(item, _index, isSelected) => (
-            <View
-              style={
-                theme === "dark"
-                  ? styles.dropdownItemDark
-                  : styles.dropdownItemLight
-              }
-            >
-              <Text>{item}</Text>
-              {isSelected && <Icon source="check" size={20} />}
-            </View>
-          )}
-          onSelect={setYear}
-        />
-        <Button mode="contained" onPress={exportData}>
+        <Button mode="outlined" onPress={() => setOpen(true)}>
+          {format(dates.startDate, "dd-MM-yyyy")} -{" "}
+          {format(dates.endDate, "dd-MM-yyyy")}
+        </Button>
+        <Button
+          mode="contained"
+          onPress={exportData}
+          disabled={data.length === 0}
+        >
           Export
         </Button>
       </Surface>
+      <DatePickerModal
+        locale="en"
+        visible={open}
+        onDismiss={() => setOpen(false)}
+        mode="range"
+        startDate={dates.startDate}
+        endDate={dates.endDate}
+        onConfirm={({ startDate, endDate }) => {
+          if (startDate && endDate) {
+            setOpen(false);
+            setDates({ startDate, endDate });
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

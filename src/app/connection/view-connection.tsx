@@ -3,10 +3,9 @@ import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
 import { addonsTable, connectionsTable } from "@/db/schema";
 import i18n from "@/lib/i18";
-import { formatSqliteTimestamp } from "@/lib/time-utils";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
-import { isThisMonth } from "date-fns";
+import { format, isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -23,7 +22,6 @@ import {
   Text,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 export default function ViewConnection() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data } = useLiveQuery(
@@ -108,7 +106,8 @@ export default function ViewConnection() {
           <Text>Current pack: {data?.basePack.name}</Text>
           <Text>
             {i18n.get("lastPayment")}:{" "}
-            {data?.lastPayment && formatSqliteTimestamp(data.lastPayment)}
+            {data?.lastPayment &&
+              format(new Date(data!.lastPayment), "dd/MM/yyyy")}
           </Text>
           <Divider />
           <View style={styles.prices}>
