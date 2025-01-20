@@ -1,3 +1,4 @@
+import CustomDrawer from "@/components/custom-drawer";
 import Dropdown from "@/components/drop-down";
 import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
@@ -16,10 +17,17 @@ import { eq, sql } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
-import { Link, router } from "expo-router";
-import Drawer from "expo-router/drawer";
+import { Link, router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
+import { Drawer } from "react-native-drawer-layout";
+import "react-native-gesture-handler";
 import {
   Button,
   Card,
@@ -31,6 +39,7 @@ import {
   Searchbar,
   Surface,
   Text,
+  useTheme,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -84,7 +93,9 @@ export default function Index() {
   const [selectedArea, setSelectedArea] = useState("Area");
   const [selectedStatus, setSelectedStatus] = useState("Status");
   const [searchString, setSearchString] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const colorScheme = useColorScheme();
+  const theme = useTheme();
 
   useEffect(() => {
     let filteredConnections = [...data];
@@ -121,7 +132,7 @@ export default function Index() {
   const viewConnection = () => {
     if (!currConnection) return;
     router.push({
-      pathname: "/connection/view-connection",
+      pathname: "/connection",
       params: { id: currConnection?.id },
     });
     setCurrConnection(null);
@@ -160,8 +171,16 @@ export default function Index() {
         flex: 1,
       }}
     >
-      <Drawer.Screen
+      <Stack.Screen
         options={{
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => setDrawerOpen((prev) => !prev)}
+              style={{ marginRight: 10 }}
+            >
+              <Icon source="menu" size={25} />
+            </TouchableOpacity>
+          ),
           headerRight: (props) => (
             <Link
               {...props}
@@ -173,170 +192,178 @@ export default function Index() {
           ),
         }}
       />
-      <Searchbar
-        placeholder="Search..."
-        value={searchString}
-        onChangeText={(val) => setSearchString(val.toLowerCase())}
-        style={{ marginTop: 10 }}
-      />
-      {connections.length === 0 && (
-        <Text
-          variant="titleMedium"
-          style={{ textAlign: "center", paddingTop: 10 }}
-        >
-          {i18n.get("noConnections")}
-        </Text>
-      )}
-      <FlashList
-        data={connections}
-        estimatedItemSize={100}
-        renderItem={({ item }) => (
-          <Card
-            mode="elevated"
-            onPress={() => setCurrConnection(item)}
-            style={{ marginBottom: 10, marginHorizontal: 5 }}
+      <Drawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onOpen={() => setDrawerOpen(true)}
+        drawerStyle={{ backgroundColor: theme.colors.surface }}
+        renderDrawerContent={CustomDrawer}
+      >
+        <Searchbar
+          placeholder="Search..."
+          value={searchString}
+          onChangeText={(val) => setSearchString(val.toLowerCase())}
+          style={{ margin: 6 }}
+        />
+        {connections.length === 0 && (
+          <Text
+            variant="titleMedium"
+            style={{ textAlign: "center", paddingTop: 10 }}
           >
-            <Card.Title
-              title={item.name}
-              titleVariant="titleLarge"
-              subtitle={`SMC # ${item.boxNumber}  :  Pack: ${item.basePack.name}`}
-              subtitleVariant="titleSmall"
-              right={(props) => (
-                <View
-                  {...props}
-                  style={{
-                    width: 15,
-                    height: 15,
-                    borderRadius: 15,
-                    backgroundColor:
-                      item.lastPayment &&
-                      isThisMonth(new Date(item.lastPayment))
-                        ? "green"
-                        : "red",
-                    marginRight: 20,
-                  }}
-                />
-              )}
-            />
-            <Card.Content style={styles.cardContent}>
-              <Text style={styles.prices}>
-                LCO price: ₹{item.basePack.lcoPrice + item.addonPricesLco}
-              </Text>
-              <Text style={styles.prices}>
-                MRP: ₹{item.basePack.customerPrice + item.addonPrices}
-              </Text>
-            </Card.Content>
-          </Card>
+            {i18n.get("noConnections")}
+          </Text>
         )}
-      />
-      <Portal>
-        <Modal
-          visible={currConnection !== null}
-          onDismiss={() => setCurrConnection(null)}
-        >
-          <View
-            style={{
-              padding: 10,
-              margin: 10,
-              borderRadius: 10,
-              backgroundColor: colorScheme === "dark" ? "black" : "white",
-            }}
+        <FlashList
+          data={connections}
+          estimatedItemSize={100}
+          renderItem={({ item }) => (
+            <Card
+              mode="elevated"
+              onPress={() => setCurrConnection(item)}
+              style={{ marginBottom: 10, marginHorizontal: 5 }}
+            >
+              <Card.Title
+                title={item.name}
+                titleVariant="titleLarge"
+                subtitle={`SMC # ${item.boxNumber}  :  Pack: ${item.basePack.name}`}
+                subtitleVariant="titleSmall"
+                right={(props) => (
+                  <View
+                    {...props}
+                    style={{
+                      width: 15,
+                      height: 15,
+                      borderRadius: 15,
+                      backgroundColor:
+                        item.lastPayment &&
+                        isThisMonth(new Date(item.lastPayment))
+                          ? "green"
+                          : "red",
+                      marginRight: 20,
+                    }}
+                  />
+                )}
+              />
+              <Card.Content style={styles.cardContent}>
+                <Text style={styles.prices}>
+                  LCO price: ₹{item.basePack.lcoPrice + item.addonPricesLco}
+                </Text>
+                <Text style={styles.prices}>
+                  MRP: ₹{item.basePack.customerPrice + item.addonPrices}
+                </Text>
+              </Card.Content>
+            </Card>
+          )}
+        />
+        <Portal>
+          <Modal
+            visible={currConnection !== null}
+            onDismiss={() => setCurrConnection(null)}
           >
-            <View style={styles.connectionInfo}>
-              <View>
-                <Text variant="titleLarge">{currConnection?.name}</Text>
-                <Pressable onPress={copySmc}>
-                  <Text>SMC #{currConnection?.boxNumber}</Text>
-                </Pressable>
-              </View>
-              <IconButton
-                icon="account"
-                mode="contained"
-                onPress={viewConnection}
-              />
-            </View>
-            <Divider style={styles.divider} bold />
-            <Text
-              variant="titleMedium"
-              style={{ color: colorScheme === "dark" ? "cyan" : "blue" }}
-            >
-              Plan name: {currConnection?.basePack.name}
-            </Text>
-            <View style={styles.address}>
-              <Icon source="map-marker" size={20} />
-              <Text variant="bodyLarge">{currConnection?.area}</Text>
-            </View>
             <View
-              style={[
-                styles.contact,
-                {
-                  backgroundColor:
-                    colorScheme === "dark" ? "darkgray" : "lightgray",
-                },
-              ]}
+              style={{
+                padding: 10,
+                margin: 10,
+                borderRadius: 10,
+                backgroundColor: colorScheme === "dark" ? "black" : "white",
+              }}
             >
-              <IconButton
-                icon="android-messages"
-                mode="contained"
-                onPress={launchSmsTamil}
-              />
-              <IconButton
-                icon="phone"
-                mode="contained"
-                onPress={() =>
-                  Linking.openURL(`tel://${currConnection!.phoneNumber}`)
-                }
-              />
-              <IconButton
-                icon="whatsapp"
-                mode="contained"
-                onPress={() =>
-                  Linking.openURL(
-                    `https://wa.me/${currConnection!.phoneNumber}`,
-                  )
-                }
-              />
-              <Text variant="titleMedium">{currConnection?.phoneNumber}</Text>
-            </View>
-            <View style={[styles.cardContent, { marginTop: 10 }]}>
-              <Text style={styles.prices}>
-                LCO price: ₹
-                {(currConnection?.basePack.lcoPrice ?? 0) +
-                  (currConnection?.addonPricesLco ?? 0)}
-              </Text>
-              <Text style={styles.prices}>
-                MRP: ₹
-                {(currConnection?.basePack.customerPrice ?? 0) +
-                  (currConnection?.addonPrices ?? 0)}
-              </Text>
-            </View>
-            <View style={styles.actions}>
-              <Button
-                mode="contained"
-                onPress={markAsPaid}
-                disabled={
-                  Boolean(currConnection?.lastPayment) &&
-                  isThisMonth(currConnection!.lastPayment!)
-                }
+              <View style={styles.connectionInfo}>
+                <View>
+                  <Text variant="titleLarge">{currConnection?.name}</Text>
+                  <Pressable onPress={copySmc}>
+                    <Text>SMC #{currConnection?.boxNumber}</Text>
+                  </Pressable>
+                </View>
+                <IconButton
+                  icon="account"
+                  mode="contained"
+                  onPress={viewConnection}
+                />
+              </View>
+              <Divider style={styles.divider} bold />
+              <Text
+                variant="titleMedium"
+                style={{ color: colorScheme === "dark" ? "cyan" : "blue" }}
               >
-                {i18.get("markAsPaid")}
-              </Button>
+                Plan name: {currConnection?.basePack.name}
+              </Text>
+              <View style={styles.address}>
+                <Icon source="map-marker" size={20} />
+                <Text variant="bodyLarge">{currConnection?.area}</Text>
+              </View>
+              <View
+                style={[
+                  styles.contact,
+                  {
+                    backgroundColor:
+                      colorScheme === "dark" ? "darkgray" : "lightgray",
+                  },
+                ]}
+              >
+                <IconButton
+                  icon="android-messages"
+                  mode="contained"
+                  onPress={launchSmsTamil}
+                />
+                <IconButton
+                  icon="phone"
+                  mode="contained"
+                  onPress={() =>
+                    Linking.openURL(`tel://${currConnection!.phoneNumber}`)
+                  }
+                />
+                <IconButton
+                  icon="whatsapp"
+                  mode="contained"
+                  onPress={() =>
+                    Linking.openURL(
+                      `https://wa.me/${currConnection!.phoneNumber}`,
+                    )
+                  }
+                />
+                <Text variant="titleMedium">{currConnection?.phoneNumber}</Text>
+              </View>
+              <View style={[styles.cardContent, { marginTop: 10 }]}>
+                <Text style={styles.prices}>
+                  LCO price: ₹
+                  {(currConnection?.basePack.lcoPrice ?? 0) +
+                    (currConnection?.addonPricesLco ?? 0)}
+                </Text>
+                <Text style={styles.prices}>
+                  MRP: ₹
+                  {(currConnection?.basePack.customerPrice ?? 0) +
+                    (currConnection?.addonPrices ?? 0)}
+                </Text>
+              </View>
+              <View style={styles.actions}>
+                <Button
+                  mode="contained"
+                  onPress={markAsPaid}
+                  disabled={
+                    Boolean(currConnection?.lastPayment) &&
+                    isThisMonth(currConnection!.lastPayment!)
+                  }
+                >
+                  {i18.get("markAsPaid")}
+                </Button>
+              </View>
             </View>
-          </View>
-        </Modal>
-      </Portal>
-      <Surface style={styles.filters}>
-        <Dropdown
-          data={areas ? [...areas.map((area) => area.name), "Area"] : []}
-          defaultValue={selectedArea}
-          onChange={setSelectedArea}
-        />
-        <Dropdown
-          data={["Paid", "Unpaid", "Status"]}
-          defaultValue={selectedStatus}
-          onChange={setSelectedStatus}
-        />
-      </Surface>
+          </Modal>
+        </Portal>
+        <Surface style={styles.filters}>
+          <Dropdown
+            data={areas ? [...areas.map((area) => area.name), "Area"] : []}
+            defaultValue={selectedArea}
+            onChange={setSelectedArea}
+          />
+          <Dropdown
+            data={["Paid", "Unpaid", "Status"]}
+            defaultValue={selectedStatus}
+            onChange={setSelectedStatus}
+          />
+        </Surface>
+      </Drawer>
     </SafeAreaView>
   );
 }

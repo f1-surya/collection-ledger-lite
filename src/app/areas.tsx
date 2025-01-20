@@ -58,7 +58,7 @@ export default function Areas() {
             )}
             onPress={() =>
               router.push({
-                pathname: "/connection/add-area",
+                pathname: "/add-area",
                 params: { id: info.item.id },
               })
             }
@@ -85,7 +85,7 @@ export default function Areas() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => router.push("/connection/add-area")}
+        onPress={() => router.push("/add-area")}
       />
     </SafeAreaView>
   );
