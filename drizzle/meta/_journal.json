@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1735393927844,
-      "tag": "0000_dusty_moonstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1735398403806,
-      "tag": "0001_lame_stranger",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1737021600409,
-      "tag": "0002_silly_shaman",
+      "when": 1737282545080,
+      "tag": "0000_uneven_vermin",
       "breakpoints": true
     }
   ]

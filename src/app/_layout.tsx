@@ -30,7 +30,8 @@ const CombinedDarkTheme = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  useMigrations(db, migrations);
+  const { error } = useMigrations(db, migrations);
+  console.log(error);
 
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", () => {

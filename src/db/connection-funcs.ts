@@ -1,4 +1,5 @@
-import { and, eq } from "drizzle-orm";
+import { startOfMonth } from "date-fns";
+import { and, eq, gte, lte } from "drizzle-orm";
 import { db } from ".";
 import {
   addonsTable,
@@ -6,7 +7,6 @@ import {
   connectionsTable,
   paymentsTable,
 } from "./schema";
-import { toSqliteTimestamp } from "./columns.helpers";
 
 /**
  * This function marks a connection as paid by inserting a new payment
@@ -39,16 +39,12 @@ export const markConnectionAsPaid = async (
     db.insert(paymentsTable).values({
       connection: connectionId,
       currentPack: currentPack.id,
-      month: today.getMonth() + 1,
-      year: today.getFullYear(),
       lcoPrice,
       customerPrice,
     }),
     db
       .update(connectionsTable)
-      .set({
-        lastPayment: toSqliteTimestamp(),
-      })
+      .set({ lastPayment: today.getTime() })
       .where(eq(connectionsTable.id, connectionId)),
   ]);
 };
@@ -70,8 +66,8 @@ export const migratePack = async (
     db.query.paymentsTable.findFirst({
       where: and(
         eq(paymentsTable.connection, connectionId),
-        eq(paymentsTable.month, today.getMonth() + 1),
-        eq(paymentsTable.year, today.getFullYear()),
+        gte(paymentsTable.date, startOfMonth(today).getTime()),
+        lte(paymentsTable.date, today.getTime()),
       ),
     }),
     db.query.basePacksTable.findFirst({
@@ -90,7 +86,7 @@ export const migratePack = async (
         currentPack,
         to: toPackId,
         type: "migration",
-        date: toSqliteTimestamp(),
+        date: today.getTime(),
         lcoPrice: toPack.lcoPrice,
         customerPrice: toPack.customerPrice,
       })
@@ -101,15 +97,12 @@ export const migratePack = async (
       currentPack,
       to: toPackId,
       type: "migration",
-      month: today.getMonth() + 1,
-      year: today.getFullYear(),
-      date: toSqliteTimestamp(),
       lcoPrice: toPack.lcoPrice,
       customerPrice: toPack.customerPrice,
     });
   }
   await db
     .update(connectionsTable)
-    .set({ lastPayment: toSqliteTimestamp(), basePack: toPackId })
+    .set({ lastPayment: today.getTime(), basePack: toPackId })
     .where(eq(connectionsTable.id, connectionId));
 };

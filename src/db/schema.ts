@@ -31,7 +31,7 @@ export const connectionsTable = t.sqliteTable(
       .notNull()
       .$type<"active" | "in-active">()
       .default("active"),
-    lastPayment: t.text(),
+    lastPayment: t.int(),
     ...timestamps,
   },
   (table) => [
@@ -125,9 +125,9 @@ export const paymentsTable = t.sqliteTable(
       .notNull()
       .references(() => connectionsTable.id),
     date: t
-      .text()
+      .int()
       .notNull()
-      .default(sql`CURRENT_TIMESTAMP`),
+      .default(sql`(unixepoch() * 1000)`),
     currentPack: t
       .int()
       .notNull()
@@ -138,12 +138,10 @@ export const paymentsTable = t.sqliteTable(
       .notNull()
       .$type<"migration" | "payment">()
       .default("payment"),
-    month: t.int().notNull(),
-    year: t.int().notNull(),
     customerPrice: t.int().notNull(),
     lcoPrice: t.int().notNull(),
   },
-  (table) => [t.index("month").on(table.month), t.index("year").on(table.year)],
+  (table) => [t.index("date").on(table.date)],
 );
 
 export const paymentRelations = relations(paymentsTable, ({ one }) => ({

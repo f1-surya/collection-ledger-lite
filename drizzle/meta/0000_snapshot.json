@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c272feb2-ba32-4eda-aff5-ed0e6fc943ee",
+  "id": "91d828ae-e649-486f-b123-08cb385dc030",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "addons_table": {
@@ -14,9 +14,9 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
-          "type": "text",
+        "channel": {
+          "name": "channel",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -25,12 +25,27 @@
           "name": "connection",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "connectionIndex": {
+          "name": "connectionIndex",
+          "columns": ["connection"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
+        "addons_table_channel_channels_table_id_fk": {
+          "name": "addons_table_channel_channels_table_id_fk",
+          "tableFrom": "addons_table",
+          "tableTo": "channels_table",
+          "columnsFrom": ["channel"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "addons_table_connection_connections_table_id_fk": {
           "name": "addons_table_connection_connections_table_id_fk",
           "tableFrom": "addons_table",
@@ -107,6 +122,44 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "channels_table": {
+      "name": "channels_table",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lcoPrice": {
+          "name": "lcoPrice",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "customerPrice": {
+          "name": "customerPrice",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "connections_table": {
       "name": "connections_table",
       "columns": {
@@ -135,7 +188,7 @@
           "name": "area",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "phoneNumber": {
@@ -162,7 +215,7 @@
         },
         "lastPayment": {
           "name": "lastPayment",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -239,11 +292,11 @@
         },
         "date": {
           "name": "date",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "(unixepoch() * 1000)"
         },
         "currentPack": {
           "name": "currentPack",
@@ -267,20 +320,6 @@
           "autoincrement": false,
           "default": "'payment'"
         },
-        "month": {
-          "name": "month",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "year": {
-          "name": "year",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "customerPrice": {
           "name": "customerPrice",
           "type": "integer",
@@ -296,7 +335,13 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "date": {
+          "name": "date",
+          "columns": ["date"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "payments_table_connection_connections_table_id_fk": {
           "name": "payments_table_connection_connections_table_id_fk",
