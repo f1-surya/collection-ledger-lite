@@ -17,36 +17,40 @@ export const markConnectionAsPaid = async (
   connectionId: number,
   currentPack: typeof basePacksTable.$inferSelect,
 ) => {
-  const today = new Date();
-  let lcoPrice = currentPack.lcoPrice;
-  let customerPrice = currentPack.customerPrice;
+  await db.transaction(async (tx) => {
+    const today = new Date();
 
-  const addons = await db.query.addonsTable.findMany({
-    where: eq(addonsTable.connection, connectionId),
-    with: {
-      channel: true,
-    },
-  });
+    // Calculate total prices including base pack and all addon channels
+    let lcoPrice = currentPack.lcoPrice;
+    let customerPrice = currentPack.customerPrice;
 
-  if (addons.length > 0) {
-    for (const addon of addons) {
-      lcoPrice += addon.channel.lcoPrice;
-      customerPrice += addon.channel.customerPrice;
+    const addons = await tx.query.addonsTable.findMany({
+      where: eq(addonsTable.connection, connectionId),
+      with: {
+        channel: true,
+      },
+    });
+
+    if (addons.length > 0) {
+      for (const addon of addons) {
+        lcoPrice += addon.channel.lcoPrice;
+        customerPrice += addon.channel.customerPrice;
+      }
     }
-  }
 
-  await Promise.all([
-    db.insert(paymentsTable).values({
-      connection: connectionId,
-      currentPack: currentPack.id,
-      lcoPrice,
-      customerPrice,
-    }),
-    db
-      .update(connectionsTable)
-      .set({ lastPayment: today.getTime() })
-      .where(eq(connectionsTable.id, connectionId)),
-  ]);
+    await Promise.all([
+      tx.insert(paymentsTable).values({
+        connection: connectionId,
+        currentPack: currentPack.id,
+        lcoPrice,
+        customerPrice,
+      }),
+      tx
+        .update(connectionsTable)
+        .set({ lastPayment: today.getTime() })
+        .where(eq(connectionsTable.id, connectionId)),
+    ]);
+  });
 };
 
 /**
@@ -61,48 +65,54 @@ export const migratePack = async (
   currentPack: number,
   toPackId: number,
 ) => {
-  const today = new Date();
-  const [payment, toPack] = await Promise.all([
-    db.query.paymentsTable.findFirst({
-      where: and(
-        eq(paymentsTable.connection, connectionId),
-        gte(paymentsTable.date, startOfMonth(today).getTime()),
-        lte(paymentsTable.date, today.getTime()),
-      ),
-    }),
-    db.query.basePacksTable.findFirst({
-      where: eq(basePacksTable.id, toPackId),
-    }),
-  ]);
+  await db.transaction(async (tx) => {
+    const today = new Date();
+    const [payment, toPack] = await Promise.all([
+      tx.query.paymentsTable.findFirst({
+        where: and(
+          eq(paymentsTable.connection, connectionId),
+          gte(paymentsTable.date, startOfMonth(today).getTime()),
+          lte(paymentsTable.date, today.getTime()),
+        ),
+      }),
+      tx.query.basePacksTable.findFirst({
+        where: eq(basePacksTable.id, toPackId),
+      }),
+    ]);
 
-  if (!toPack) {
-    throw new Error("Invalid pack");
-  }
+    if (!toPack) {
+      throw new Error("Invalid pack");
+    }
 
-  if (payment) {
-    await db
-      .update(paymentsTable)
-      .set({
+    if (currentPack === toPackId) {
+      throw new Error("Cannot migrate to the same pack");
+    }
+
+    if (payment) {
+      await tx
+        .update(paymentsTable)
+        .set({
+          currentPack,
+          to: toPackId,
+          type: "migration",
+          date: today.getTime(),
+          lcoPrice: toPack.lcoPrice,
+          customerPrice: toPack.customerPrice,
+        })
+        .where(eq(paymentsTable.id, connectionId));
+    } else {
+      await tx.insert(paymentsTable).values({
+        connection: connectionId,
         currentPack,
         to: toPackId,
         type: "migration",
-        date: today.getTime(),
         lcoPrice: toPack.lcoPrice,
         customerPrice: toPack.customerPrice,
-      })
-      .where(eq(paymentsTable.id, connectionId));
-  } else {
-    await db.insert(paymentsTable).values({
-      connection: connectionId,
-      currentPack,
-      to: toPackId,
-      type: "migration",
-      lcoPrice: toPack.lcoPrice,
-      customerPrice: toPack.customerPrice,
-    });
-  }
-  await db
-    .update(connectionsTable)
-    .set({ lastPayment: today.getTime(), basePack: toPackId })
-    .where(eq(connectionsTable.id, connectionId));
+      });
+    }
+    await tx
+      .update(connectionsTable)
+      .set({ lastPayment: today.getTime(), basePack: toPackId })
+      .where(eq(connectionsTable.id, connectionId));
+  });
 };
