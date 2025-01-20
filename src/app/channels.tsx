@@ -53,7 +53,7 @@ export default function Channels() {
               )}
               onPress={() =>
                 router.push({
-                  pathname: "/connection/create-channel",
+                  pathname: "/create-channel",
                   params: { id: item.id },
                 })
               }
@@ -62,7 +62,12 @@ export default function Channels() {
           ItemSeparatorComponent={Divider}
         />
       ) : (
-        <Text variant="bodyLarge">{i18n.get("noChannels")}</Text>
+        <Text
+          variant="bodyLarge"
+          style={{ textAlign: "center", marginVertical: "auto" }}
+        >
+          {i18n.get("noChannels")}
+        </Text>
       )}
       <DeleteWarning
         open={!!currChannel}
@@ -72,7 +77,7 @@ export default function Channels() {
       <FAB
         style={styles.fab}
         icon="plus"
-        onPress={() => router.push("/connection/create-channel")}
+        onPress={() => router.push("/create-channel")}
       />
     </SafeAreaView>
   );

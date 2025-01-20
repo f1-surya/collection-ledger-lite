@@ -47,7 +47,7 @@ export default function Packs() {
             left={(props) => <List.Icon {...props} icon="package" />}
             onPress={() =>
               router.push({
-                pathname: "/connection/add-pack",
+                pathname: "/add-pack",
                 params: { id: info.item.id },
               })
             }
@@ -67,7 +67,7 @@ export default function Packs() {
       <FAB
         icon="plus"
         style={style.fab}
-        onPress={() => router.push("/connection/add-pack")}
+        onPress={() => router.push("/add-pack")}
       />
     </SafeAreaView>
   );

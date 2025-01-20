@@ -11,16 +11,17 @@ import { Plus } from "lucide-react-native";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, useColorScheme, View } from "react-native";
-import { Appbar, Button, Icon, Text } from "react-native-paper";
+import { Button, Icon, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
+import validator from "validator";
 import { z } from "zod";
 
 const formSchema = z.object({
-  boxNumber: z.string().min(10).toLowerCase(),
-  name: z.string().min(3),
+  boxNumber: z.string().min(10).trim().toLowerCase(),
+  name: z.string().min(3).trim(),
   area: z.number(),
-  phoneNumber: z.string().min(10),
+  phoneNumber: z.string().refine(validator.isMobilePhone),
   basePack: z.number(),
 });
 
@@ -94,16 +95,7 @@ export default function AddConnection() {
     <SafeAreaView style={styles.root}>
       <Stack.Screen
         name="/connection/add-connection"
-        options={{
-          title: "Add connection",
-          headerLeft: (props) => (
-            <Appbar.BackAction
-              {...props}
-              onPress={router.back}
-              style={{ margin: 0, width: "auto", marginRight: 25 }}
-            />
-          ),
-        }}
+        options={{ title: "Add connection" }}
       />
       <FormTextInput
         name="name"
@@ -168,7 +160,7 @@ export default function AddConnection() {
         <Button
           mode="outlined"
           style={styles.addButton}
-          onPress={() => router.push("/connection/add-area")}
+          onPress={() => router.push("/add-area")}
         >
           <Plus color={colorScheme === "dark" ? "white" : "black"} size={25} />
         </Button>
@@ -221,7 +213,7 @@ export default function AddConnection() {
           <Button
             mode="outlined"
             style={styles.addButton}
-            onPress={() => router.push("/connection/add-pack")}
+            onPress={() => router.push("/add-pack")}
           >
             <Plus
               color={colorScheme === "dark" ? "white" : "black"}

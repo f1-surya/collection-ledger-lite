@@ -28,8 +28,6 @@ export default function AddAddons() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const promises: Promise<any>[] = [];
       for (const channel of channels) {
-        console.log(connection);
-
         promises.push(
           db
             .insert(addonsTable)
@@ -84,7 +82,7 @@ export default function AddAddons() {
       )}
       <FAB
         icon="plus"
-        onPress={() => router.push("/connection/create-channel")}
+        onPress={() => router.push("/create-channel")}
         style={styles.fab}
       />
     </SafeAreaView>
