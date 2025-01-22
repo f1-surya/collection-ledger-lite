@@ -1,0 +1,14 @@
+appId: com.surya.collectionledger
+---
+- launchApp
+- assertVisible: "Thomas Shelby"
+- tapOn:
+    text: "Thomas Shelby"
+- tapOn:
+    id: "mark-as-paid-button"
+- tapOn:
+    id: "menu-button"
+- tapOn:
+    text: "History"
+- assertVisible:
+    text: "Thomas Shelby"

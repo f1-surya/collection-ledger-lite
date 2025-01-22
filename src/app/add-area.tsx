@@ -67,6 +67,7 @@ export default function AddArea() {
       />
       <TextInput
         label="Area name"
+        testID="area-name"
         value={areaName}
         onChangeText={setAreaName}
         mode="outlined"

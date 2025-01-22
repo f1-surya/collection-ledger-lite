@@ -78,21 +78,25 @@ export default function AddPack() {
       <Text variant="titleSmall">{i18.get("createPackTitle")}</Text>
       <FormTextInput
         name="name"
+        testId="pack-name"
         placeHolder={i18.get("packName")}
         control={control}
       />
       <FormTextInput
         name="lcoPrice"
+        testId="lco-price"
         placeHolder={i18.get("lcoPrice")}
         control={control}
       />
       <FormTextInput
         name="customerPrice"
+        testId="customer-price"
         placeHolder={i18.get("customerPrice")}
         control={control}
       />
       <Button
         mode="contained"
+        testID="save-pack-button"
         onPress={handleSubmit(savePack)}
         style={{ marginTop: 20 }}
       >

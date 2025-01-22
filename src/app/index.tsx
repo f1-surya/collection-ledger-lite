@@ -175,6 +175,7 @@ export default function Index() {
         options={{
           headerLeft: () => (
             <TouchableOpacity
+              testID="menu-button"
               onPress={() => setDrawerOpen((prev) => !prev)}
               style={{ marginRight: 10 }}
             >
@@ -184,6 +185,7 @@ export default function Index() {
           headerRight: (props) => (
             <Link
               {...props}
+              testID="add-connection-button"
               href="/connection/add-connection"
               style={{ marginRight: 10 }}
             >
@@ -338,6 +340,7 @@ export default function Index() {
               </View>
               <View style={styles.actions}>
                 <Button
+                  testID="mark-as-paid-button"
                   mode="contained"
                   onPress={markAsPaid}
                   disabled={
