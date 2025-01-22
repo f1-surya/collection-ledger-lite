@@ -1,0 +1,45 @@
+appId: com.surya.collectionledger
+---
+- launchApp
+- tapOn:
+    id: "add-connection-button"
+- tapOn:
+    id: "name"
+- inputText: "Thomas Shelby"
+- tapOn:
+    id: "phoneNumber"
+- inputText: "1234567890"
+- tapOn:
+    id: "boxNumber"
+- inputText: "1234567890"
+- tapOn:
+    id: "add-pack-button"
+- tapOn:
+    id: "pack-name"
+- inputText: "Tamil Silver"
+- tapOn:
+    id: "lco-price"
+- inputText: "152"
+- tapOn:
+    id: "customer-price"
+- inputText: "260"
+- tapOn:
+    id: "save-pack-button"
+- tapOn:
+    text: "Select base pack"
+- tapOn:
+    text: "Tamil Silver"
+- tapOn:
+    id: "add-area-button"
+- tapOn:
+    id: "area-name"
+- inputText: "Small heath"
+- tapOn:
+    text: "Save"
+- tapOn:
+    text: "Select an area"
+- tapOn:
+    text: "Small heath"
+- tapOn:
+    id: "save-connection-button"
+- assertVisible: "Connections"

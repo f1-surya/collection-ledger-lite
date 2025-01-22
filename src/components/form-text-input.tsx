@@ -7,6 +7,7 @@ interface Props {
   name: string;
   control: Control<any>;
   password?: boolean;
+  testId?: string;
 }
 
 export default function FormTextInput({
@@ -14,6 +15,7 @@ export default function FormTextInput({
   name,
   control,
   password,
+  testId,
 }: Props) {
   return (
     <Controller
@@ -22,6 +24,7 @@ export default function FormTextInput({
       render={({ field: { onChange, value, onBlur }, fieldState }) => (
         <View>
           <TextInput
+            testID={testId}
             label={placeHolder}
             value={value?.toString()}
             onChangeText={onChange}

@@ -99,16 +99,19 @@ export default function AddConnection() {
       />
       <FormTextInput
         name="name"
+        testId="name"
         placeHolder={i18n.get("customerName")}
         control={control}
       />
       <FormTextInput
         name="boxNumber"
+        testId="boxNumber"
         placeHolder={i18n.get("boxNumber")}
         control={control}
       />
       <FormTextInput
         name="phoneNumber"
+        testId="phoneNumber"
         placeHolder={i18n.get("phoneNumber")}
         control={control}
       />
@@ -159,6 +162,7 @@ export default function AddConnection() {
         />
         <Button
           mode="outlined"
+          testID="add-area-button"
           style={styles.addButton}
           onPress={() => router.push("/add-area")}
         >
@@ -212,6 +216,7 @@ export default function AddConnection() {
           />
           <Button
             mode="outlined"
+            testID="add-pack-button"
             style={styles.addButton}
             onPress={() => router.push("/add-pack")}
           >
@@ -222,7 +227,11 @@ export default function AddConnection() {
           </Button>
         </View>
       )}
-      <Button onPress={handleSubmit(saveConnection)} mode="contained">
+      <Button
+        onPress={handleSubmit(saveConnection)}
+        mode="contained"
+        testID="save-connection-button"
+      >
         {i18n.get("save")}
       </Button>
     </SafeAreaView>
