@@ -17,15 +17,9 @@ import { eq, sql } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
-import { Link, router, Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import { Drawer } from "react-native-drawer-layout";
 import "react-native-gesture-handler";
 import {
@@ -174,23 +168,20 @@ export default function Index() {
       <Stack.Screen
         options={{
           headerLeft: () => (
-            <TouchableOpacity
+            <IconButton
               testID="menu-button"
-              onPress={() => setDrawerOpen((prev) => !prev)}
-              style={{ marginRight: 10 }}
-            >
-              <Icon source="menu" size={25} />
-            </TouchableOpacity>
+              icon="menu"
+              onPressIn={() => setDrawerOpen((prev) => !prev)}
+              style={{ marginLeft: 0 }}
+            />
           ),
           headerRight: (props) => (
-            <Link
+            <IconButton
               {...props}
               testID="add-connection-button"
-              href="/connection/add-connection"
-              style={{ marginRight: 10 }}
-            >
-              <Icon source="plus" size={25} />
-            </Link>
+              icon="plus"
+              onPressIn={() => router.push("/connection/add-connection")}
+            />
           ),
         }}
       />
