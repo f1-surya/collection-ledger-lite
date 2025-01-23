@@ -51,7 +51,7 @@ export default function AddAddons() {
           headerRight:
             channels.length > 0
               ? (props) => (
-                  <Button {...props} onPress={save}>
+                  <Button {...props} onPressIn={save}>
                     Save
                   </Button>
                 )

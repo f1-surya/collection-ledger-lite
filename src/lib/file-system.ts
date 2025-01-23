@@ -1,5 +1,4 @@
 import * as FileSystem from "expo-file-system";
-import { File, Paths } from "expo-file-system/next";
 import { localStorage } from "./mmkv";
 import toast from "./toast";
 
@@ -50,8 +49,9 @@ export const saveFile = async (
 };
 
 export const saveFileLocal = async (fileName: string, base64: string) => {
-  const file = new File(Paths.cache, fileName);
-  file.create();
-  file.write(base64);
-  return file.uri;
+  const fileUri = (await FileSystem.documentDirectory) + fileName;
+  await FileSystem.writeAsStringAsync(fileUri, base64, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  return fileUri;
 };
