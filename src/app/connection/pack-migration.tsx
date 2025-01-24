@@ -46,7 +46,7 @@ export default function PackMigration() {
         options={{
           title: "Pack Migration",
           headerRight: selectedPack
-            ? () => <Button onPress={save}>Save</Button>
+            ? () => <Button onPressIn={save}>Save</Button>
             : undefined,
         }}
       />
@@ -80,7 +80,7 @@ export default function PackMigration() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => router.push("/connection/add-pack")}
+        onPress={() => router.push("/add-pack")}
       />
     </SafeAreaView>
   );
