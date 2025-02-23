@@ -285,38 +285,42 @@ export default function Index() {
                 <Icon source="map-marker" size={20} />
                 <Text variant="bodyLarge">{currConnection?.area}</Text>
               </View>
-              <View
-                style={[
-                  styles.contact,
-                  {
-                    backgroundColor:
-                      colorScheme === "dark" ? "darkgray" : "lightgray",
-                  },
-                ]}
-              >
-                <IconButton
-                  icon="android-messages"
-                  mode="contained"
-                  onPress={launchSmsTamil}
-                />
-                <IconButton
-                  icon="phone"
-                  mode="contained"
-                  onPress={() =>
-                    Linking.openURL(`tel://${currConnection!.phoneNumber}`)
-                  }
-                />
-                <IconButton
-                  icon="whatsapp"
-                  mode="contained"
-                  onPress={() =>
-                    Linking.openURL(
-                      `https://wa.me/${currConnection!.phoneNumber}`,
-                    )
-                  }
-                />
-                <Text variant="titleMedium">{currConnection?.phoneNumber}</Text>
-              </View>
+              {currConnection?.phoneNumber && (
+                <View
+                  style={[
+                    styles.contact,
+                    {
+                      backgroundColor:
+                        colorScheme === "dark" ? "darkgray" : "lightgray",
+                    },
+                  ]}
+                >
+                  <IconButton
+                    icon="android-messages"
+                    mode="contained"
+                    onPress={launchSmsTamil}
+                  />
+                  <IconButton
+                    icon="phone"
+                    mode="contained"
+                    onPress={() =>
+                      Linking.openURL(`tel://${currConnection!.phoneNumber}`)
+                    }
+                  />
+                  <IconButton
+                    icon="whatsapp"
+                    mode="contained"
+                    onPress={() =>
+                      Linking.openURL(
+                        `https://wa.me/${currConnection!.phoneNumber}`,
+                      )
+                    }
+                  />
+                  <Text variant="titleMedium">
+                    {currConnection?.phoneNumber}
+                  </Text>
+                </View>
+              )}
               <View style={[styles.cardContent, { marginTop: 10 }]}>
                 <Text style={styles.prices}>
                   LCO price: ₹

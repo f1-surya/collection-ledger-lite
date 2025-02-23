@@ -4,8 +4,8 @@ import { Drawer, useTheme } from "react-native-paper";
 
 const routes: {
   label: string;
-  path: "/" | "/history" | "/packs" | "/areas" | "/channels";
-  icon: "home" | "clock" | "package" | "map" | "layers";
+  path: "/" | "/history" | "/packs" | "/areas" | "/channels" | "/data";
+  icon: string;
 }[] = [
   {
     label: "Connections",
@@ -31,6 +31,11 @@ const routes: {
     label: "Channels",
     path: "/channels",
     icon: "layers",
+  },
+  {
+    label: "Data",
+    path: "/data",
+    icon: "database",
   },
 ];
 

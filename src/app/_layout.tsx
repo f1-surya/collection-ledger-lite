@@ -42,6 +42,7 @@ export default function RootLayout() {
           <Stack.Screen name="packs" options={{ title: "Base packs" }} />
           <Stack.Screen name="areas" options={{ title: "Areas" }} />
           <Stack.Screen name="channels" options={{ title: "Channels" }} />
+          <Stack.Screen name="data" options={{ title: "Data" }} />
         </Stack>
       </ThemeProvider>
     </PaperProvider>
