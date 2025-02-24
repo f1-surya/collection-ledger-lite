@@ -49,7 +49,7 @@ export const saveFile = async (
 };
 
 export const saveFileLocal = async (fileName: string, base64: string) => {
-  const fileUri = (await FileSystem.documentDirectory) + fileName;
+  const fileUri = FileSystem.documentDirectory + fileName;
   await FileSystem.writeAsStringAsync(fileUri, base64, {
     encoding: FileSystem.EncodingType.Base64,
   });

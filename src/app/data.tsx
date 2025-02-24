@@ -1,23 +1,18 @@
-import { StyleSheet } from "react-native";
-import {
-  ActivityIndicator,
-  Dialog,
-  List,
-  Portal,
-  Text,
-} from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { getDocumentAsync } from "expo-document-picker";
+import { exportDb, importDb, importFromSheet } from "@/lib/data";
 import toast from "@/lib/toast";
+import { getDocumentAsync } from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import { importFromSheet } from "@/lib/data";
-import { useState } from "react";
 import { router } from "expo-router";
+import { useState } from "react";
+import { StyleSheet } from "react-native";
+import { ActivityIndicator, Dialog, List, Portal } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Advanced() {
+export default function Data() {
   const [isLoading, setIsLoading] = useState(false);
   const pickSheet = async () => {
     try {
+      setIsLoading(true);
       const res = await getDocumentAsync({
         type: [
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -29,18 +24,29 @@ export default function Advanced() {
         const base64 = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
-        setIsLoading(true);
-        importFromSheet(base64)
-          .then(() => {
-            setIsLoading(false);
-            router.replace("/");
-          })
-          .catch(() => setIsLoading(false));
+        await importFromSheet(base64);
+        setIsLoading(false);
+        router.push("/");
       }
     } catch (e) {
       console.error(e);
       toast("Something went wrong");
+      setIsLoading(false);
     }
+  };
+
+  const handleExport = async () => {
+    setIsLoading(true);
+    await exportDb();
+    setIsLoading(false);
+    toast("Export succeeded");
+  };
+
+  const handleImport = async () => {
+    setIsLoading(true);
+    await importDb();
+    setIsLoading(false);
+    router.push("/");
   };
 
   return (
@@ -50,10 +56,21 @@ export default function Advanced() {
         left={(props) => <List.Icon icon="google-spreadsheet" {...props} />}
         onPress={pickSheet}
       />
+      <List.Item
+        title="Export database"
+        left={(props) => <List.Icon icon="database-export" {...props} />}
+        onPress={handleExport}
+      />
+      <List.Item
+        title="Import database"
+        left={(props) => <List.Icon icon="database-import" {...props} />}
+        onPress={handleImport}
+      />
       <Portal>
         <Dialog visible={isLoading}>
-          <ActivityIndicator />
-          <Text>Loading...</Text>
+          <Dialog.Content>
+            <ActivityIndicator size="large" />
+          </Dialog.Content>
         </Dialog>
       </Portal>
     </SafeAreaView>

@@ -2,6 +2,11 @@ import { read, utils } from "xlsx";
 import toast from "./toast";
 import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
+import * as FileSystem from "expo-file-system";
+import { openDatabaseSync } from "expo-sqlite";
+import { askPermission, saveFile } from "./file-system";
+import Share from "react-native-share";
+import { getDocumentAsync } from "expo-document-picker";
 
 export async function importFromSheet(base64: string) {
   try {
@@ -42,6 +47,55 @@ export async function importFromSheet(base64: string) {
         status: row[8] == "Active" ? "active" : "in-active",
         basePack: basePacks[currPack],
         area,
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    toast("Something went wrong");
+  }
+}
+
+export async function exportDb() {
+  try {
+    const dbPath = FileSystem.documentDirectory + "SQLite/db.db";
+    const db = openDatabaseSync(dbPath);
+    db.closeSync();
+    const dbFile = await FileSystem.readAsStringAsync(dbPath, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    try {
+      const destiny = await askPermission();
+      if (!destiny.granted) {
+        throw Error("Permission not granted");
+      }
+      await saveFile(
+        "collection-ledger.db",
+        dbFile,
+        "application/octet-stream",
+        destiny.directoryUri,
+      );
+    } catch (e) {
+      console.error(e);
+      Share.open({ url: dbPath });
+    }
+  } catch (e) {
+    console.error(e);
+    toast("Something went wrong");
+  }
+}
+
+export async function importDb() {
+  try {
+    const res = await getDocumentAsync();
+    if (!res.canceled) {
+      const db = res.assets[0].uri;
+      if (!db.includes("db")) {
+        toast("Wrong file");
+        return;
+      }
+      await FileSystem.copyAsync({
+        from: db,
+        to: FileSystem.documentDirectory + "SQLite/db.db",
       });
     }
   } catch (e) {
