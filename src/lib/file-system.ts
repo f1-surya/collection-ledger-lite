@@ -1,5 +1,5 @@
 import * as FileSystem from "expo-file-system";
-import { localStorage } from "./mmkv";
+import { mmkv } from "./mmkv";
 import toast from "./toast";
 
 /**
@@ -10,7 +10,7 @@ export const askPermission = async (): Promise<{
   granted: boolean;
   directoryUri: string;
 }> => {
-  const uriFromLocalStorage = localStorage.getString("directoryUri");
+  const uriFromLocalStorage = mmkv.getString("directoryUri");
   if (uriFromLocalStorage) {
     return { granted: true, directoryUri: uriFromLocalStorage };
   }
@@ -21,7 +21,7 @@ export const askPermission = async (): Promise<{
     toast("Permission to access media library is required");
     return { granted, directoryUri: "" };
   }
-  localStorage.set("directoryUri", directoryUri);
+  mmkv.set("directoryUri", directoryUri);
   return { granted, directoryUri };
 };
 
