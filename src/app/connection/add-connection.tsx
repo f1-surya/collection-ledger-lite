@@ -7,11 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { asc, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { Plus } from "lucide-react-native";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, useColorScheme, View } from "react-native";
-import { Button, Icon, Text } from "react-native-paper";
+import { Button, Icon, IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectDropdown from "react-native-select-dropdown";
 import validator from "validator";
@@ -160,14 +159,12 @@ export default function AddConnection() {
             </View>
           )}
         />
-        <Button
+        <IconButton
+          icon="plus"
           mode="outlined"
-          testID="add-area-button"
-          style={styles.addButton}
           onPress={() => router.push("/add-area")}
-        >
-          <Plus color={colorScheme === "dark" ? "white" : "black"} size={25} />
-        </Button>
+          style={styles.addButton}
+        />
       </View>
       {!id && (
         <View style={styles.areaSelector}>
@@ -214,17 +211,12 @@ export default function AddConnection() {
               </View>
             )}
           />
-          <Button
+          <IconButton
+            icon="plus"
             mode="outlined"
-            testID="add-pack-button"
-            style={styles.addButton}
             onPress={() => router.push("/add-pack")}
-          >
-            <Plus
-              color={colorScheme === "dark" ? "white" : "black"}
-              size={25}
-            />
-          </Button>
+            style={styles.addButton}
+          />
         </View>
       )}
       <Button
@@ -250,9 +242,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   addButton: {
-    width: 40,
+    width: "17%",
     height: 40,
     borderRadius: 10,
+    margin: 0,
   },
   areaLight: {
     backgroundColor: "white",

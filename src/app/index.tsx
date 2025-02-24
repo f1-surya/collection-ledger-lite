@@ -10,6 +10,7 @@ import {
   connectionsTable,
 } from "@/db/schema";
 import { default as i18, default as i18n } from "@/lib/i18";
+import { mmkv } from "@/lib/mmkv";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
@@ -84,8 +85,12 @@ export default function Index() {
   const [currConnection, setCurrConnection] = useState<
     (typeof data)[number] | null
   >(null);
-  const [selectedArea, setSelectedArea] = useState("Area");
-  const [selectedStatus, setSelectedStatus] = useState("Status");
+  const [selectedArea, setSelectedArea] = useState(
+    mmkv.getString("area") ?? "Area",
+  );
+  const [selectedStatus, setSelectedStatus] = useState(
+    mmkv.getString("status") ?? "Status",
+  );
   const [searchString, setSearchString] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const colorScheme = useColorScheme();
@@ -353,12 +358,18 @@ export default function Index() {
           <Dropdown
             data={areas ? [...areas.map((area) => area.name), "Area"] : []}
             defaultValue={selectedArea}
-            onChange={setSelectedArea}
+            onChange={(val) => {
+              setSelectedArea(val);
+              mmkv.set("area", val);
+            }}
           />
           <Dropdown
             data={["Paid", "Unpaid", "Status"]}
             defaultValue={selectedStatus}
-            onChange={setSelectedStatus}
+            onChange={(val) => {
+              setSelectedStatus(val);
+              mmkv.set("status", val);
+            }}
           />
         </Surface>
       </Drawer>
