@@ -60,17 +60,6 @@ export default function Index() {
         0
       )
     `,
-        addonPricesLco: sql<number>`
-      COALESCE(
-        (
-          SELECT SUM(${channelsTable.lcoPrice})
-          FROM ${addonsTable}
-          JOIN ${channelsTable} ON ${addonsTable.channel} = ${channelsTable.id}
-          WHERE ${addonsTable.connection} = ${connectionsTable.id}
-        ),
-        0
-      )
-    `,
       })
       .from(connectionsTable)
       .innerJoin(
@@ -242,10 +231,7 @@ export default function Index() {
                   />
                 )}
               />
-              <Card.Content style={styles.cardContent}>
-                <Text style={styles.prices}>
-                  LCO price: ₹{item.basePack.lcoPrice + item.addonPricesLco}
-                </Text>
+              <Card.Content>
                 <Text style={styles.prices}>
                   MRP: ₹{item.basePack.customerPrice + item.addonPrices}
                 </Text>
@@ -326,18 +312,11 @@ export default function Index() {
                   </Text>
                 </View>
               )}
-              <View style={[styles.cardContent, { marginTop: 10 }]}>
-                <Text style={styles.prices}>
-                  LCO price: ₹
-                  {(currConnection?.basePack.lcoPrice ?? 0) +
-                    (currConnection?.addonPricesLco ?? 0)}
-                </Text>
-                <Text style={styles.prices}>
-                  MRP: ₹
-                  {(currConnection?.basePack.customerPrice ?? 0) +
-                    (currConnection?.addonPrices ?? 0)}
-                </Text>
-              </View>
+              <Text style={styles.prices}>
+                MRP: ₹
+                {(currConnection?.basePack.customerPrice ?? 0) +
+                  (currConnection?.addonPrices ?? 0)}
+              </Text>
               <View style={styles.actions}>
                 <Button
                   testID="mark-as-paid-button"
@@ -385,11 +364,6 @@ const styles = StyleSheet.create({
   },
   nameFilter: {
     width: "70%",
-  },
-  cardContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   prices: {
     fontWeight: "bold",
