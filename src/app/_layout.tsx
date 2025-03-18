@@ -43,6 +43,10 @@ export default function RootLayout() {
           <Stack.Screen name="areas" options={{ title: "Areas" }} />
           <Stack.Screen name="channels" options={{ title: "Channels" }} />
           <Stack.Screen name="data" options={{ title: "Data" }} />
+          <Stack.Screen
+            name="monthly-stats"
+            options={{ title: "Monthly stats" }}
+          />
         </Stack>
       </ThemeProvider>
     </PaperProvider>
