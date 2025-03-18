@@ -4,7 +4,14 @@ import { Drawer, useTheme } from "react-native-paper";
 
 const routes: {
   label: string;
-  path: "/" | "/history" | "/packs" | "/areas" | "/channels" | "/data";
+  path:
+    | "/"
+    | "/history"
+    | "/packs"
+    | "/areas"
+    | "/channels"
+    | "/data"
+    | "/monthly-stats";
   icon: string;
 }[] = [
   {
@@ -36,6 +43,11 @@ const routes: {
     label: "Data",
     path: "/data",
     icon: "database",
+  },
+  {
+    label: "Monthly stats",
+    path: "/monthly-stats",
+    icon: "chart-arc",
   },
 ];
 
