@@ -35,7 +35,7 @@ export default function AddArea() {
         if (id) {
           await db
             .update(areasTable)
-            .set({ name: areaName })
+            .set({ name: areaName.toUpperCase() })
             .where(eq(areasTable.id, parseInt(id)));
         } else {
           await db.insert(areasTable).values({ name: areaName });

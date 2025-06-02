@@ -25,15 +25,17 @@ export async function importFromSheet(base64: string) {
     const allAreas: { [key: string]: number } = {};
     const basePacks: { [key: string]: number } = {};
 
-    for (let i = 2; i < cleanData.length; i++) {
+    for (let i = 1; i < cleanData.length; i++) {
       const row = cleanData[i] as string[];
 
       // Check if currPack exists if not insert it into the db and use it's ID
       const currPack = row[5];
       if (!basePacks[currPack]) {
-        const res = await db
-          .insert(basePacksTable)
-          .values({ name: currPack, lcoPrice: 90, customerPrice: 200 });
+        const res = await db.insert(basePacksTable).values({
+          name: currPack.toUpperCase(),
+          lcoPrice: 90,
+          customerPrice: 200,
+        });
         basePacks[currPack] = res.lastInsertRowId;
       }
 
@@ -46,8 +48,8 @@ export async function importFromSheet(base64: string) {
         allAreas[currArea] = res.lastInsertRowId;
       }
       await db.insert(connectionsTable).values({
-        name: row[1],
-        boxNumber: row[4],
+        name: row[1].toUpperCase(),
+        boxNumber: row[4].toUpperCase(),
         status: row[8] == "Active" ? "active" : "in-active",
         basePack: basePacks[currPack],
         area: allAreas[currArea],

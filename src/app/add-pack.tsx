@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
 const packSchema = z.object({
-  name: z.string().min(5),
+  name: z.string().min(5).toUpperCase(),
   lcoPrice: z.coerce.number(),
   customerPrice: z.coerce.number(),
 });

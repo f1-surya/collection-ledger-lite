@@ -17,7 +17,7 @@ import validator from "validator";
 import { z } from "zod";
 
 const formSchema = z.object({
-  boxNumber: z.string().min(10).trim().toLowerCase(),
+  boxNumber: z.string().min(10).trim().toUpperCase(),
   name: z.string().min(3).trim(),
   area: z.number(),
   phoneNumber: z.string().refine(validator.isMobilePhone),

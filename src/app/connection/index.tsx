@@ -22,6 +22,7 @@ import {
   Text,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 export default function ViewConnection() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data } = useLiveQuery(
