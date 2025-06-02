@@ -22,18 +22,13 @@ export async function importFromSheet(base64: string) {
       row.some((cell) => cell !== ""),
     );
 
-    let area: number;
-    const allAreas = await db.select().from(areasTable);
-    if (allAreas.length > 0) {
-      area = allAreas[0].id;
-    } else {
-      const res = await db.insert(areasTable).values({ name: "Unknown" });
-      area = res.lastInsertRowId;
-    }
-
+    const allAreas: { [key: string]: number } = {};
     const basePacks: { [key: string]: number } = {};
-    for (let i = 1; i < cleanData.length; i++) {
+
+    for (let i = 2; i < cleanData.length; i++) {
       const row = cleanData[i] as string[];
+
+      // Check if currPack exists if not insert it into the db and use it's ID
       const currPack = row[5];
       if (!basePacks[currPack]) {
         const res = await db
@@ -41,12 +36,21 @@ export async function importFromSheet(base64: string) {
           .values({ name: currPack, lcoPrice: 90, customerPrice: 200 });
         basePacks[currPack] = res.lastInsertRowId;
       }
+
+      // Check if the area exists or else insert it
+      const currArea = row[2];
+      if (!allAreas[currArea]) {
+        const res = await db
+          .insert(areasTable)
+          .values({ name: currArea.toUpperCase() });
+        allAreas[currArea] = res.lastInsertRowId;
+      }
       await db.insert(connectionsTable).values({
         name: row[1],
         boxNumber: row[4],
         status: row[8] == "Active" ? "active" : "in-active",
         basePack: basePacks[currPack],
-        area,
+        area: allAreas[currArea],
       });
     }
   } catch (e) {
