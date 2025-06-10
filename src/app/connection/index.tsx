@@ -116,6 +116,7 @@ export default function ViewConnection() {
               LCO price: ₹
               {(data?.basePack.lcoPrice ?? 0) +
                 addons.reduce((acc, item) => acc + item.channel.lcoPrice, 0)}
+              {"    "}
             </Text>
             <Text style={styles.price}>
               MRP: ₹

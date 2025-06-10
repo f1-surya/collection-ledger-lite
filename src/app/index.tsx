@@ -26,10 +26,9 @@ import "react-native-gesture-handler";
 import {
   Button,
   Card,
-  Divider,
+  Dialog,
   Icon,
   IconButton,
-  Modal,
   Portal,
   Searchbar,
   Surface,
@@ -240,32 +239,18 @@ export default function Index() {
           )}
         />
         <Portal>
-          <Modal
+          <Dialog
             visible={currConnection !== null}
             onDismiss={() => setCurrConnection(null)}
           >
-            <View
-              style={{
-                padding: 10,
-                margin: 10,
-                borderRadius: 10,
-                backgroundColor: colorScheme === "dark" ? "black" : "white",
-              }}
-            >
-              <View style={styles.connectionInfo}>
-                <View>
-                  <Text variant="titleLarge">{currConnection?.name}</Text>
-                  <Pressable onPress={copySmc}>
-                    <Text>SMC #{currConnection?.boxNumber}</Text>
-                  </Pressable>
-                </View>
-                <IconButton
-                  icon="account"
-                  mode="contained"
-                  onPress={viewConnection}
-                />
-              </View>
-              <Divider style={styles.divider} bold />
+            <Dialog.Title>{currConnection?.name}</Dialog.Title>
+            <Dialog.Content>
+              <Pressable onPress={copySmc}>
+                <Text variant="titleMedium">
+                  SMC #{currConnection?.boxNumber}
+                </Text>
+              </Pressable>
+
               <Text
                 variant="titleMedium"
                 style={{ color: colorScheme === "dark" ? "cyan" : "blue" }}
@@ -317,21 +302,21 @@ export default function Index() {
                 {(currConnection?.basePack.customerPrice ?? 0) +
                   (currConnection?.addonPrices ?? 0)}
               </Text>
-              <View style={styles.actions}>
-                <Button
-                  testID="mark-as-paid-button"
-                  mode="contained"
-                  onPress={markAsPaid}
-                  disabled={
-                    Boolean(currConnection?.lastPayment) &&
-                    isThisMonth(currConnection!.lastPayment!)
-                  }
-                >
-                  {i18.get("markAsPaid")}
-                </Button>
-              </View>
-            </View>
-          </Modal>
+            </Dialog.Content>
+            <Dialog.Actions style={styles.actions}>
+              <Button onPress={viewConnection}>View</Button>
+              <Button
+                testID="mark-as-paid-button"
+                onPress={markAsPaid}
+                disabled={
+                  Boolean(currConnection?.lastPayment) &&
+                  isThisMonth(currConnection!.lastPayment!)
+                }
+              >
+                {i18.get("markAsPaid")}
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
         </Portal>
         <Surface style={styles.filters}>
           <Dropdown
