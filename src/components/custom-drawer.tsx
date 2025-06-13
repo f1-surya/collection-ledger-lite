@@ -5,7 +5,6 @@ import { Drawer, useTheme } from "react-native-paper";
 const routes: {
   label: string;
   path:
-    | "/"
     | "/history"
     | "/packs"
     | "/areas"
@@ -14,11 +13,6 @@ const routes: {
     | "/monthly-stats";
   icon: string;
 }[] = [
-  {
-    label: "Connections",
-    path: "/",
-    icon: "home",
-  },
   {
     label: "History",
     path: "/history",
@@ -40,14 +34,14 @@ const routes: {
     icon: "layers",
   },
   {
-    label: "Data",
-    path: "/data",
-    icon: "database",
-  },
-  {
     label: "Monthly stats",
     path: "/monthly-stats",
     icon: "chart-arc",
+  },
+  {
+    label: "Data",
+    path: "/data",
+    icon: "database",
   },
 ];
 

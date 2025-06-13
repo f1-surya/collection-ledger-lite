@@ -19,8 +19,15 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
 import { router, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Drawer } from "react-native-drawer-layout";
 import "react-native-gesture-handler";
 import {
@@ -83,6 +90,7 @@ export default function Index() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const colorScheme = useColorScheme();
   const theme = useTheme();
+  const searchBar = useRef<TextInput | null>(null);
 
   useEffect(() => {
     let filteredConnections = [...data];
@@ -189,24 +197,27 @@ export default function Index() {
           placeholder="Search..."
           value={searchString}
           onChangeText={(val) => setSearchString(val.toLowerCase())}
-          style={{ margin: 6 }}
+          ref={searchBar}
+          onClearIconPress={() => searchBar.current?.focus()}
+          style={styles.searchBar}
         />
         {connections.length === 0 && (
-          <Text
-            variant="titleMedium"
-            style={{ textAlign: "center", paddingTop: 10 }}
-          >
+          <Text variant="titleMedium" style={styles.noConnections}>
             {i18n.get("noConnections")}
           </Text>
         )}
         <FlashList
           data={connections}
           estimatedItemSize={100}
+          keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
             <Card
               mode="elevated"
-              onPress={() => setCurrConnection(item)}
-              style={{ marginBottom: 10, marginHorizontal: 5 }}
+              onPressIn={() => {
+                Keyboard.dismiss();
+                setCurrConnection(item);
+              }}
+              style={styles.connection}
             >
               <Card.Title
                 title={item.name}
@@ -379,5 +390,16 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginTop: 10,
     gap: 10,
+  },
+  noConnections: {
+    textAlign: "center",
+    padding: 10,
+  },
+  connection: {
+    marginBottom: 10,
+    marginHorizontal: 5,
+  },
+  searchBar: {
+    margin: 6,
   },
 });

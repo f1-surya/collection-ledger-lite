@@ -18,9 +18,13 @@ import { z } from "zod";
 
 const formSchema = z.object({
   boxNumber: z.string().min(10).trim().toUpperCase(),
-  name: z.string().min(3).trim(),
+  name: z.string().min(3).trim().toUpperCase(),
   area: z.number(),
-  phoneNumber: z.string().refine(validator.isMobilePhone),
+  phoneNumber: z
+    .string()
+    .refine(validator.isMobilePhone)
+    .optional()
+    .or(z.literal("")),
   basePack: z.number(),
 });
 
