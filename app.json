@@ -5,17 +5,17 @@
     "version": "0.10.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "collectionledger",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["whatsapp"]
+      },
+      "bundleIdentifier": "com.surya.collectionledger"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "packageName": "com.surya.collectionledger",
       "package": "com.surya.collectionledger",
       "permissions": [
