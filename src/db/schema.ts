@@ -37,6 +37,7 @@ export const connectionsTable = t.sqliteTable(
   (table) => [
     t.index("boxNumberIndex").on(table.boxNumber),
     t.index("areaIndex").on(table.area),
+    t.index("nameIndex").on(table.name),
   ],
 );
 
@@ -102,7 +103,10 @@ export const addonsTable = t.sqliteTable(
       .references(() => connectionsTable.id)
       .notNull(),
   },
-  (table) => [t.index("connectionIndex").on(table.connection)],
+  (table) => [
+    t.index("connectionIndex").on(table.connection),
+    t.index("channel").on(table.channel),
+  ],
 );
 
 export const addonRelations = relations(addonsTable, ({ one }) => ({

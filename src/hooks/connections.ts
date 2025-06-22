@@ -9,7 +9,7 @@ import {
 import { mmkv } from "@/lib/mmkv";
 import { isThisMonth } from "date-fns/isThisMonth";
 import { eq, sql } from "drizzle-orm";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function useConnections() {
   const [connections, setConnections] = useState<GetConnectionsReturnType>([]);
@@ -43,10 +43,11 @@ export default function useConnections() {
       });
     }
     if (searchString.length > 0) {
+      const target = searchString.toUpperCase();
       filteredConnections = filteredConnections.filter(
         (connection) =>
-          connection.name.toLowerCase().includes(searchString) ||
-          connection.boxNumber.toLowerCase().includes(searchString),
+          connection.name.includes(target) ||
+          connection.boxNumber.includes(target),
       );
     }
     return filteredConnections;
@@ -56,9 +57,9 @@ export default function useConnections() {
     fetchData();
   }, []);
 
-  function fetchData() {
+  const fetchData = useCallback(() => {
     getConnections().then((res) => setConnections(res));
-  }
+  }, []);
 
   return {
     filteredConnections,
