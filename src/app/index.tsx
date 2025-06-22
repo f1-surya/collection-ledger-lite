@@ -1,42 +1,23 @@
+import ConnectionDialog from "@/components/connection-dialog";
 import CustomDrawer from "@/components/custom-drawer";
 import Dropdown from "@/components/drop-down";
 import { db } from "@/db";
-import { markConnectionAsPaid } from "@/db/connection-funcs";
-import {
-  addonsTable,
-  areasTable,
-  basePacksTable,
-  channelsTable,
-  connectionsTable,
-} from "@/db/schema";
-import { default as i18, default as i18n } from "@/lib/i18";
+import useConnections, {
+  type GetConnectionsReturnType,
+} from "@/hooks/connections";
+import { default as i18n } from "@/lib/i18";
 import { mmkv } from "@/lib/mmkv";
-import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
-import { eq, sql } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import * as Clipboard from "expo-clipboard";
-import * as Linking from "expo-linking";
 import { router, Stack } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import {
-  Keyboard,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  useColorScheme,
-  View,
-} from "react-native";
+import { useRef, useState } from "react";
+import { Keyboard, StyleSheet, TextInput, View } from "react-native";
 import { Drawer } from "react-native-drawer-layout";
 import "react-native-gesture-handler";
 import {
-  Button,
   Card,
-  Dialog,
-  Icon,
   IconButton,
-  Portal,
   Searchbar,
   Surface,
   Text,
@@ -45,118 +26,23 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const { data } = useLiveQuery(
-    db
-      .select({
-        id: connectionsTable.id,
-        name: connectionsTable.name,
-        boxNumber: connectionsTable.boxNumber,
-        area: areasTable.name,
-        phoneNumber: connectionsTable.phoneNumber,
-        lastPayment: connectionsTable.lastPayment,
-        basePack: { ...basePacksTable },
-        addonPrices: sql<number>`
-      COALESCE(
-        (
-          SELECT SUM(${channelsTable.customerPrice})
-          FROM ${addonsTable}
-          JOIN ${channelsTable} ON ${addonsTable.channel} = ${channelsTable.id}
-          WHERE ${addonsTable.connection} = ${connectionsTable.id}
-        ),
-        0
-      )
-    `,
-      })
-      .from(connectionsTable)
-      .innerJoin(
-        basePacksTable,
-        eq(connectionsTable.basePack, basePacksTable.id),
-      )
-      .innerJoin(areasTable, eq(connectionsTable.area, areasTable.id))
-      .orderBy(connectionsTable.name),
-  );
+  const {
+    filteredConnections: connections,
+    searchString,
+    selectedArea,
+    selectedStatus,
+    setSearchString,
+    setSelectedArea,
+    setSelectedStatus,
+    refresh,
+  } = useConnections();
   const { data: areas } = useLiveQuery(db.query.areasTable.findMany());
-  const [connections, setConnections] = useState<typeof data>([]);
   const [currConnection, setCurrConnection] = useState<
-    (typeof data)[number] | null
+    GetConnectionsReturnType[number] | null
   >(null);
-  const [selectedArea, setSelectedArea] = useState(
-    mmkv.getString("area") ?? "Area",
-  );
-  const [selectedStatus, setSelectedStatus] = useState(
-    mmkv.getString("status") ?? "Status",
-  );
-  const [searchString, setSearchString] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const colorScheme = useColorScheme();
   const theme = useTheme();
   const searchBar = useRef<TextInput | null>(null);
-
-  useEffect(() => {
-    let filteredConnections = [...data];
-    if (selectedArea !== "Area") {
-      filteredConnections = filteredConnections.filter(
-        (connection) => connection.area === selectedArea,
-      );
-    }
-    if (selectedStatus !== "Status") {
-      filteredConnections = filteredConnections.filter((connection) => {
-        let paid = false;
-        if (
-          connection.lastPayment &&
-          isThisMonth(new Date(connection.lastPayment!))
-        ) {
-          paid = true;
-        }
-        if (selectedStatus === "Paid") {
-          return paid;
-        }
-        return !paid;
-      });
-    }
-    if (searchString.length > 0) {
-      filteredConnections = filteredConnections.filter(
-        (connection) =>
-          connection.name.toLowerCase().includes(searchString) ||
-          connection.boxNumber.toLowerCase().includes(searchString),
-      );
-    }
-    setConnections(filteredConnections);
-  }, [data, selectedArea, selectedStatus, searchString]);
-
-  const viewConnection = () => {
-    if (!currConnection) return;
-    router.push({
-      pathname: "/connection",
-      params: { id: currConnection?.id },
-    });
-    setCurrConnection(null);
-  };
-
-  const launchSmsTamil = () => {
-    if (!currConnection) return;
-    const uri = encodeURI(
-      `sms://${currConnection.phoneNumber}?body=உங்கள் சந்தா தொகையை இந்த மாத இறுதிக்குள் செலுத்தவும்`,
-    );
-    Linking.openURL(uri);
-  };
-
-  const copySmc = () => {
-    if (!currConnection) return;
-    Clipboard.setStringAsync(currConnection.boxNumber);
-    toast("SMC number copied to clipboard.");
-  };
-
-  const markAsPaid = async () => {
-    if (!currConnection) return;
-    try {
-      await markConnectionAsPaid(currConnection.id, currConnection.basePack);
-      setCurrConnection(null);
-    } catch (e) {
-      console.error(e);
-      toast("Something went wrong");
-    }
-  };
 
   return (
     <SafeAreaView
@@ -210,10 +96,12 @@ export default function Index() {
           data={connections}
           estimatedItemSize={100}
           keyboardShouldPersistTaps="handled"
+          refreshing={false}
+          onRefresh={refresh}
           renderItem={({ item }) => (
             <Card
               mode="elevated"
-              onPressIn={() => {
+              onPress={() => {
                 Keyboard.dismiss();
                 setCurrConnection(item);
               }}
@@ -249,86 +137,10 @@ export default function Index() {
             </Card>
           )}
         />
-        <Portal>
-          <Dialog
-            visible={currConnection !== null}
-            onDismiss={() => setCurrConnection(null)}
-          >
-            <Dialog.Title>{currConnection?.name}</Dialog.Title>
-            <Dialog.Content>
-              <Pressable onPress={copySmc}>
-                <Text variant="titleMedium">
-                  SMC #{currConnection?.boxNumber}
-                </Text>
-              </Pressable>
-
-              <Text
-                variant="titleMedium"
-                style={{ color: colorScheme === "dark" ? "cyan" : "blue" }}
-              >
-                Plan name: {currConnection?.basePack.name}
-              </Text>
-              <View style={styles.address}>
-                <Icon source="map-marker" size={20} />
-                <Text variant="bodyLarge">{currConnection?.area}</Text>
-              </View>
-              {currConnection?.phoneNumber && (
-                <View
-                  style={[
-                    styles.contact,
-                    {
-                      backgroundColor:
-                        colorScheme === "dark" ? "darkgray" : "lightgray",
-                    },
-                  ]}
-                >
-                  <IconButton
-                    icon="android-messages"
-                    mode="contained"
-                    onPress={launchSmsTamil}
-                  />
-                  <IconButton
-                    icon="phone"
-                    mode="contained"
-                    onPress={() =>
-                      Linking.openURL(`tel://${currConnection!.phoneNumber}`)
-                    }
-                  />
-                  <IconButton
-                    icon="whatsapp"
-                    mode="contained"
-                    onPress={() =>
-                      Linking.openURL(
-                        `https://wa.me/${currConnection!.phoneNumber}`,
-                      )
-                    }
-                  />
-                  <Text variant="titleMedium">
-                    {currConnection?.phoneNumber}
-                  </Text>
-                </View>
-              )}
-              <Text style={styles.prices}>
-                MRP: ₹
-                {(currConnection?.basePack.customerPrice ?? 0) +
-                  (currConnection?.addonPrices ?? 0)}
-              </Text>
-            </Dialog.Content>
-            <Dialog.Actions style={styles.actions}>
-              <Button onPress={viewConnection}>View</Button>
-              <Button
-                testID="mark-as-paid-button"
-                onPress={markAsPaid}
-                disabled={
-                  Boolean(currConnection?.lastPayment) &&
-                  isThisMonth(currConnection!.lastPayment!)
-                }
-              >
-                {i18.get("markAsPaid")}
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
+        <ConnectionDialog
+          currConnection={currConnection}
+          setCurrConnection={setCurrConnection}
+        />
         <Surface style={styles.filters}>
           <Dropdown
             data={areas ? [...areas.map((area) => area.name), "Area"] : []}
@@ -371,25 +183,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 10,
-  },
-  address: {
-    flexDirection: "row",
-    gap: 5,
-    marginVertical: 10,
-    alignItems: "center",
-  },
-  contact: {
-    padding: 10,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 10,
-    gap: 10,
   },
   noConnections: {
     textAlign: "center",
