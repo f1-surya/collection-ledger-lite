@@ -9,7 +9,7 @@ const routes: {
     | "/packs"
     | "/areas"
     | "/channels"
-    | "/data"
+    | "/settings"
     | "/monthly-stats";
   icon: string;
 }[] = [
@@ -39,9 +39,9 @@ const routes: {
     icon: "chart-arc",
   },
   {
-    label: "Data",
-    path: "/data",
-    icon: "database",
+    label: "Settings",
+    path: "/settings",
+    icon: "cog",
   },
 ];
 

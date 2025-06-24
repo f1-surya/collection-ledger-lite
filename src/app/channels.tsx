@@ -1,13 +1,13 @@
 import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { addonsTable, channelsTable } from "@/db/schema";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, ToastAndroid } from "react-native";
 import { Divider, FAB, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Channels() {
   const { data } = useLiveQuery(db.query.channelsTable.findMany());
   const [currChannel, setCurrChannel] = useState<number | undefined>();
+  const { t } = useTranslation();
 
   const deleteChannel = async () => {
     try {
@@ -22,7 +23,7 @@ export default function Channels() {
         where: eq(addonsTable.channel, currChannel!),
       });
       if (addons.length > 0) {
-        toast(i18n.get("channelDelete"), ToastAndroid.LONG);
+        toast(t("channelDelete"), ToastAndroid.LONG);
       } else {
         await db
           .delete(channelsTable)
@@ -66,7 +67,7 @@ export default function Channels() {
           variant="bodyLarge"
           style={{ textAlign: "center", marginVertical: "auto" }}
         >
-          {i18n.get("noChannels")}
+          {t("noChannels")}
         </Text>
       )}
       <DeleteWarning

@@ -1,13 +1,13 @@
 import FormTextInput from "@/components/form-text-input";
 import { db } from "@/db";
 import { basePacksTable } from "@/db/schema";
-import i18 from "@/lib/i18";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eq } from "drizzle-orm";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import { Appbar, Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,6 +24,7 @@ export default function AddPack() {
   const { control, handleSubmit, reset } = useForm<z.infer<typeof packSchema>>({
     resolver: zodResolver(packSchema),
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (id) {
@@ -75,23 +76,23 @@ export default function AddPack() {
           ),
         }}
       />
-      <Text variant="titleSmall">{i18.get("createPackTitle")}</Text>
+      <Text variant="titleSmall">{t("createPackTitle")}</Text>
       <FormTextInput
         name="name"
         testId="pack-name"
-        placeHolder={i18.get("packName")}
+        placeHolder={t("packName")}
         control={control}
       />
       <FormTextInput
         name="lcoPrice"
         testId="lco-price"
-        placeHolder={i18.get("lcoPrice")}
+        placeHolder={t("lcoPrice")}
         control={control}
       />
       <FormTextInput
         name="customerPrice"
         testId="customer-price"
-        placeHolder={i18.get("customerPrice")}
+        placeHolder={t("customerPrice")}
         control={control}
       />
       <Button
@@ -100,7 +101,7 @@ export default function AddPack() {
         onPress={handleSubmit(savePack)}
         style={{ marginTop: 20 }}
       >
-        {i18.get("savePack")}
+        {t("savePack")}
       </Button>
     </SafeAreaView>
   );

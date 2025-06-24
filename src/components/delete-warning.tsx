@@ -1,4 +1,4 @@
-import i18n from "@/lib/i18";
+import { useTranslation } from "react-i18next";
 import { Button, Dialog, Portal, Text } from "react-native-paper";
 
 interface Props {
@@ -8,12 +8,14 @@ interface Props {
 }
 
 export default function DeleteWarning({ open, onClose, onConfirm }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Portal>
       <Dialog visible={open} onDismiss={onClose}>
-        <Dialog.Title>{i18n.get("warning")} !!!</Dialog.Title>
+        <Dialog.Title>{t("warning")} !!!</Dialog.Title>
         <Dialog.Content>
-          <Text>{i18n.get("deleteWarning")}</Text>
+          <Text>{t("deleteWarning")}</Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={onClose}>Cancel</Button>

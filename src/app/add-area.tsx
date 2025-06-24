@@ -1,10 +1,10 @@
 import { db } from "@/db";
 import { areasTable } from "@/db/schema";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { eq } from "drizzle-orm";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import { Appbar, Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function AddArea() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [areaName, setAreaName] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (id) {
@@ -30,7 +31,7 @@ export default function AddArea() {
   const saveArea = async () => {
     try {
       if (areaName.length === 0) {
-        toast(i18n.get("emptyName"));
+        toast(t("emptyName"));
       } else {
         if (id) {
           await db

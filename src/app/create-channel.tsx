@@ -1,13 +1,13 @@
 import FormTextInput from "@/components/form-text-input";
 import { db } from "@/db";
 import { channelsTable } from "@/db/schema";
-import i18 from "@/lib/i18";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eq } from "drizzle-orm";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,6 +24,7 @@ export default function CreateAddon() {
   const { control, handleSubmit, reset } = useForm<z.infer<typeof addonSchema>>(
     { resolver: zodResolver(addonSchema) },
   );
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (id) {
@@ -68,21 +69,21 @@ export default function CreateAddon() {
         options={{ title: "Add channel" }}
       />
       <Text variant="titleMedium" style={styles.title}>
-        {i18.get("createChannel")}
+        {t("createChannel")}
       </Text>
       <FormTextInput
         name="name"
-        placeHolder={i18.get("channelName")}
+        placeHolder={t("channelName")}
         control={control}
       />
       <FormTextInput
         name="lcoPrice"
-        placeHolder={i18.get("lcoPrice")}
+        placeHolder={t("lcoPrice")}
         control={control}
       />
       <FormTextInput
         name="customerPrice"
-        placeHolder={i18.get("customerPrice")}
+        placeHolder={t("customerPrice")}
         control={control}
       />
       <Button

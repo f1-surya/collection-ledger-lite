@@ -16,7 +16,7 @@ for (let i = 0; i < 23; i++) {
   months[format(lastDate, "MMM yyyy")] = lastDate;
 }
 
-export default function () {
+export default function Stats() {
   const [totalConnections, setTotalConnections] = useState(0);
   const [paidConnections, setPaidConnections] = useState(0);
   const [packUsage, setPackUsage] = useState<{ [key: string]: number }>({});

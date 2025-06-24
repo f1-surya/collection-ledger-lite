@@ -13,9 +13,12 @@ importers:
       "@hookform/resolvers":
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.58.1(react@18.3.1))
+      "@react-native-picker/picker":
+        specifier: ^2.11.1
+        version: 2.11.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       "@react-navigation/drawer":
-        specifier: ^7.5.0
-        version: 7.5.0(6a772e55bc8f61798ce956fd6bb07a34)
+        specifier: ^7.5.1
+        version: 7.5.1(6a772e55bc8f61798ce956fd6bb07a34)
       "@react-navigation/native":
         specifier: ^7.1.14
         version: 7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
@@ -69,7 +72,7 @@ importers:
         version: 17.0.6(expo@52.0.46(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@expo/metro-runtime@4.0.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)))(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))
       expo-router:
         specifier: ~4.0.21
-        version: 4.0.21(1eb2c591ee1cd240db6d819b15731086)
+        version: 4.0.21(215eb87526f806361659b34529b411d1)
       expo-splash-screen:
         specifier: ~0.29.24
         version: 0.29.24(expo@52.0.46(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@expo/metro-runtime@4.0.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)))(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))
@@ -85,9 +88,12 @@ importers:
       expo-system-ui:
         specifier: ~4.0.9
         version: 4.0.9(expo@52.0.46(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@expo/metro-runtime@4.0.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)))(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-web@0.19.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))
-      i18n-js:
-        specifier: ^4.5.1
-        version: 4.5.1
+      i18next:
+        specifier: ^25.2.1
+        version: 25.2.1(typescript@5.8.3)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -97,6 +103,9 @@ importers:
       react-hook-form:
         specifier: ^7.58.1
         version: 7.58.1(react@18.3.1)
+      react-i18next:
+        specifier: ^15.5.3
+        version: 15.5.3(i18next@25.2.1(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
       react-native:
         specifier: 0.76.3
         version: 0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)
@@ -2176,6 +2185,15 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
 
+  "@react-native-picker/picker@2.11.1":
+    resolution:
+      {
+        integrity: sha512-ThklnkK4fV3yynnIIRBkxxjxR4IFbdMNJVF6tlLdOJ/zEFUEFUEdXY0KmH0iYzMwY8W4/InWsLiA7AkpAbnexA==,
+      }
+    peerDependencies:
+      react: "*"
+      react-native: "*"
+
   "@react-native/assets-registry@0.76.3":
     resolution:
       {
@@ -2334,10 +2352,10 @@ packages:
       "@types/react":
         optional: true
 
-  "@react-navigation/bottom-tabs@7.4.0":
+  "@react-navigation/bottom-tabs@7.4.1":
     resolution:
       {
-        integrity: sha512-8gfF77NBwggZJDa43DLb7iBhhpdXkUE5RDfib7eev3McrS+o9ZbwJrtmOSM3nEDInh2tVuHvi7pxBJi2xZ2ECQ==,
+        integrity: sha512-PVLlFTktelOwtWcL5pXXxtpY2Lvd+A4cKghQvO5GOEDWuFabwuXN0TPIJ2l/G7+wW+Lz5Yd4v7sBfZbOJx7jdg==,
       }
     peerDependencies:
       "@react-navigation/native": ^7.1.14
@@ -2354,10 +2372,10 @@ packages:
     peerDependencies:
       react: ">= 18.2.0"
 
-  "@react-navigation/drawer@7.5.0":
+  "@react-navigation/drawer@7.5.1":
     resolution:
       {
-        integrity: sha512-PI87uQjJiJDfXTfxRB+nWK2MUUuts4uROgXxsU/1+Q42OcyRK/Oxuh/QuDMHcsGC5EPspGVeCJR/MOKFE4sdLw==,
+        integrity: sha512-nN5S9BduauCl8vE5T0BOJTHVzNdc5vYOct+CUEJgXq0lkNJ/dvzPOH8kqz9yRExEv/tWBfaQXAwpaBuGb3SMYA==,
       }
     peerDependencies:
       "@react-navigation/native": ^7.1.14
@@ -2368,10 +2386,10 @@ packages:
       react-native-safe-area-context: ">= 4.0.0"
       react-native-screens: ">= 4.0.0"
 
-  "@react-navigation/elements@2.5.0":
+  "@react-navigation/elements@2.5.1":
     resolution:
       {
-        integrity: sha512-ZYAq6MZexQZXT7YOMEST8ZGoVWJGtjGq0joEV/XRt2DNBRAx6B+tBlU7cHFmEkqmeRDNUADBrV/+uCSpz0sQMw==,
+        integrity: sha512-0hNo+yaBNteK6lNKaSvo1dl/7TD+95vw2BIYBz1PYA2LhLL1B7SIARaVfccChhk4sa46szrTc8gbX0LSln2fcQ==,
       }
     peerDependencies:
       "@react-native-masked-view/masked-view": ">= 0.2.0"
@@ -2383,10 +2401,10 @@ packages:
       "@react-native-masked-view/masked-view":
         optional: true
 
-  "@react-navigation/native-stack@7.3.19":
+  "@react-navigation/native-stack@7.3.20":
     resolution:
       {
-        integrity: sha512-w/RTezjphI2EaQHqWWDyVL3+aFkhASWx9eQv57J9SQX9LNa8lsWq37Q2wCbB5U+H79bP8OGj+4P6wVJ4y/OZgA==,
+        integrity: sha512-igG1bxVJ/GR9IeNeHCSC/Ax0efZUVIWjW4ZkJvXC8D+Rjgwfr8jmWfk9nGCyaTaj5lvrb8Gwv0bnObalGqr2Yw==,
       }
     peerDependencies:
       "@react-navigation/native": ^7.1.14
@@ -3277,12 +3295,6 @@ packages:
         integrity: sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==,
       }
     engines: { node: ">=0.6" }
-
-  bignumber.js@9.3.0:
-    resolution:
-      {
-        integrity: sha512-EM7aMFTXbptt/wZdMlBv2t8IViwQL+h6SLHosp8Yf0dqJMTnY6iL32opnAB6kAdL0SZPuvcAzFr31o0c/R3/RA==,
-      }
 
   boolbase@1.0.0:
     resolution:
@@ -5397,6 +5409,12 @@ packages:
       }
     engines: { node: ^16.14.0 || >=18.0.0 }
 
+  html-parse-stringify@3.0.1:
+    resolution:
+      {
+        integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==,
+      }
+
   http-errors@2.0.0:
     resolution:
       {
@@ -5432,11 +5450,16 @@ packages:
         integrity: sha512-WDC/ui2VVRrz3jOVi+XtjqkDjiVjTtFaAGiW37k6b+ohyQ5wYDOGkvCZa8+H0nx3gyvv0+BST9xuOgIyGQ00gw==,
       }
 
-  i18n-js@4.5.1:
+  i18next@25.2.1:
     resolution:
       {
-        integrity: sha512-n7jojFj1WC0tztgr0I8jqTXuIlY1xNzXnC3mjKX/YjJhimdM+jXM8vOmn9d3xQFNC6qDHJ4ovhdrGXrRXLIGkA==,
+        integrity: sha512-+UoXK5wh+VlE1Zy5p6MjcvctHXAhRwQKCxiJD8noKZzIXmnAX8gdHX5fLPA3MEVxEN4vbZkQFy8N0LyD9tUqPw==,
       }
+    peerDependencies:
+      typescript: ^5
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   ieee754@1.2.1:
     resolution:
@@ -6335,12 +6358,6 @@ packages:
         integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==,
       }
     engines: { node: ">=6" }
-
-  make-plural@7.4.0:
-    resolution:
-      {
-        integrity: sha512-4/gC9KVNTV6pvYg2gFeQYTW3mWaoJt7WZE5vrp1KnQDgW92JtYZnzmZT81oj/dUTqAIu0ufI2x3dkgu3bB1tYg==,
-      }
 
   makeerror@1.0.12:
     resolution:
@@ -7378,6 +7395,25 @@ packages:
     engines: { node: ">=18.0.0" }
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
+
+  react-i18next@15.5.3:
+    resolution:
+      {
+        integrity: sha512-ypYmOKOnjqPEJZO4m1BI0kS8kWqkBNsKYyhVUfij0gvjy9xJNoG/VcGkxq5dRlVwzmrmY1BQMAmpbbUBLwC4Kw==,
+      }
+    peerDependencies:
+      i18next: ">= 23.2.3"
+      react: ">= 16.8.0"
+      react-dom: "*"
+      react-native: "*"
+      typescript: ^5
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      typescript:
+        optional: true
 
   react-is@16.13.1:
     resolution:
@@ -8794,6 +8830,13 @@ packages:
       {
         integrity: sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==,
       }
+
+  void-elements@3.1.0:
+    resolution:
+      {
+        integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==,
+      }
+    engines: { node: ">=0.10.0" }
 
   walker@1.0.8:
     resolution:
@@ -10661,6 +10704,11 @@ snapshots:
       "@radix-ui/react-compose-refs": 1.0.0(react@18.3.1)
       react: 18.3.1
 
+  "@react-native-picker/picker@2.11.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
+    dependencies:
+      react: 18.3.1
+      react-native: 0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)
+
   "@react-native/assets-registry@0.76.3": {}
 
   "@react-native/babel-plugin-codegen@0.76.3(@babel/preset-env@7.27.2(@babel/core@7.27.4))":
@@ -10900,9 +10948,9 @@ snapshots:
     optionalDependencies:
       "@types/react": 18.3.23
 
-  "@react-navigation/bottom-tabs@7.4.0(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
+  "@react-navigation/bottom-tabs@7.4.1(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
     dependencies:
-      "@react-navigation/elements": 2.5.0(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
+      "@react-navigation/elements": 2.5.1(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       "@react-navigation/native": 7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       color: 4.2.3
       react: 18.3.1
@@ -10923,9 +10971,9 @@ snapshots:
       use-latest-callback: 0.2.4(react@18.3.1)
       use-sync-external-store: 1.5.0(react@18.3.1)
 
-  "@react-navigation/drawer@7.5.0(6a772e55bc8f61798ce956fd6bb07a34)":
+  "@react-navigation/drawer@7.5.1(6a772e55bc8f61798ce956fd6bb07a34)":
     dependencies:
-      "@react-navigation/elements": 2.5.0(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
+      "@react-navigation/elements": 2.5.1(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       "@react-navigation/native": 7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       color: 4.2.3
       react: 18.3.1
@@ -10939,7 +10987,7 @@ snapshots:
     transitivePeerDependencies:
       - "@react-native-masked-view/masked-view"
 
-  "@react-navigation/elements@2.5.0(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
+  "@react-navigation/elements@2.5.1(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
     dependencies:
       "@react-navigation/native": 7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       color: 4.2.3
@@ -10949,9 +10997,9 @@ snapshots:
       use-latest-callback: 0.2.4(react@18.3.1)
       use-sync-external-store: 1.5.0(react@18.3.1)
 
-  "@react-navigation/native-stack@7.3.19(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
+  "@react-navigation/native-stack@7.3.20(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)":
     dependencies:
-      "@react-navigation/elements": 2.5.0(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
+      "@react-navigation/elements": 2.5.1(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       "@react-navigation/native": 7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-native: 0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)
@@ -11550,8 +11598,6 @@ snapshots:
       open: 8.4.2
 
   big-integer@1.6.52: {}
-
-  bignumber.js@9.3.0: {}
 
   boolbase@1.0.0: {}
 
@@ -12587,14 +12633,14 @@ snapshots:
     dependencies:
       invariant: 2.2.4
 
-  expo-router@4.0.21(1eb2c591ee1cd240db6d819b15731086):
+  expo-router@4.0.21(215eb87526f806361659b34529b411d1):
     dependencies:
       "@expo/metro-runtime": 4.0.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))
       "@expo/server": 0.5.3
       "@radix-ui/react-slot": 1.0.1(react@18.3.1)
-      "@react-navigation/bottom-tabs": 7.4.0(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
+      "@react-navigation/bottom-tabs": 7.4.1(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       "@react-navigation/native": 7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
-      "@react-navigation/native-stack": 7.3.19(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
+      "@react-navigation/native-stack": 7.3.20(@react-navigation/native@7.1.14(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native-screens@4.1.0(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       client-only: 0.0.1
       expo: 52.0.46(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@expo/metro-runtime@4.0.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)))(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
       expo-constants: 17.0.8(expo@52.0.46(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@expo/metro-runtime@4.0.1(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)))(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))
@@ -12608,7 +12654,7 @@ snapshots:
       semver: 7.6.3
       server-only: 0.0.1
     optionalDependencies:
-      "@react-navigation/drawer": 7.5.0(6a772e55bc8f61798ce956fd6bb07a34)
+      "@react-navigation/drawer": 7.5.1(6a772e55bc8f61798ce956fd6bb07a34)
       react-native-reanimated: 3.16.7(@babel/core@7.27.4)(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - "@react-native-masked-view/masked-view"
@@ -13024,6 +13070,10 @@ snapshots:
     dependencies:
       lru-cache: 10.4.3
 
+  html-parse-stringify@3.0.1:
+    dependencies:
+      void-elements: 3.1.0
+
   http-errors@2.0.0:
     dependencies:
       depd: 2.0.0
@@ -13040,11 +13090,11 @@ snapshots:
 
   hyphenate-style-name@1.1.0: {}
 
-  i18n-js@4.5.1:
+  i18next@25.2.1(typescript@5.8.3):
     dependencies:
-      bignumber.js: 9.3.0
-      lodash: 4.17.21
-      make-plural: 7.4.0
+      "@babel/runtime": 7.27.6
+    optionalDependencies:
+      typescript: 5.8.3
 
   ieee754@1.2.1: {}
 
@@ -13580,8 +13630,6 @@ snapshots:
     dependencies:
       pify: 4.0.1
       semver: 5.7.2
-
-  make-plural@7.4.0: {}
 
   makeerror@1.0.12:
     dependencies:
@@ -14228,6 +14276,17 @@ snapshots:
   react-hook-form@7.58.1(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  react-i18next@15.5.3(i18next@25.2.1(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1))(react@18.3.1)(typescript@5.8.3):
+    dependencies:
+      "@babel/runtime": 7.27.6
+      html-parse-stringify: 3.0.1
+      i18next: 25.2.1(typescript@5.8.3)
+      react: 18.3.1
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
+      react-native: 0.76.3(@babel/core@7.27.4)(@babel/preset-env@7.27.2(@babel/core@7.27.4))(@types/react@18.3.23)(react@18.3.1)
+      typescript: 5.8.3
 
   react-is@16.13.1: {}
 
@@ -15160,6 +15219,8 @@ snapshots:
   vary@1.1.2: {}
 
   vlq@1.0.1: {}
+
+  void-elements@3.1.0: {}
 
   walker@1.0.8:
     dependencies:

@@ -1,13 +1,13 @@
 import { db } from "@/db";
 import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { format, startOfMonth } from "date-fns";
 import { and, gte, lte } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import {
   Button,
@@ -46,6 +46,7 @@ export default function History() {
     }),
     [dates],
   );
+  const { t } = useTranslation();
   type Payments = NonNullable<typeof data>;
 
   const exportData = async () => {
@@ -176,7 +177,7 @@ export default function History() {
         />
       ) : (
         <Text variant="titleMedium" style={{ textAlign: "center" }}>
-          {i18n.get("noPayment")}
+          {t("noPayment")}
         </Text>
       )}
       <Surface style={styles.bottomBar} elevation={4}>

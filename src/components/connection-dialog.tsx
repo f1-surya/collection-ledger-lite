@@ -1,12 +1,11 @@
 import { markConnectionAsPaid } from "@/db/connection-funcs";
 import { GetConnectionsReturnType } from "@/hooks/connections";
-import i18n from "@/lib/i18";
-import i18 from "@/lib/i18";
 import toast from "@/lib/toast";
 import { isThisMonth } from "date-fns";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import {
   Button,
@@ -27,6 +26,7 @@ export default function ConnectionDialog({
   setCurrConnection,
 }: Props) {
   const colorScheme = useColorScheme();
+  const { t } = useTranslation();
 
   const viewConnection = () => {
     if (!currConnection) return;
@@ -40,7 +40,7 @@ export default function ConnectionDialog({
   const launchSmsTamil = () => {
     if (!currConnection) return;
     const uri = encodeURI(
-      `sms://${currConnection.phoneNumber}?body=${i18n.get("sms")}`,
+      `sms://${currConnection.phoneNumber}?body=${t("sms")}`,
     );
     Linking.openURL(uri);
   };
@@ -132,7 +132,7 @@ export default function ConnectionDialog({
               isThisMonth(currConnection!.lastPayment!)
             }
           >
-            {i18.get("markAsPaid")}
+            {t("markAsPaid")}
           </Button>
         </Dialog.Actions>
       </Dialog>

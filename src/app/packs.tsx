@@ -1,13 +1,13 @@
 import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { basePacksTable, connectionsTable } from "@/db/schema";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, ToastAndroid } from "react-native";
 import { Divider, FAB, List } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Packs() {
   const { data } = useLiveQuery(db.query.basePacksTable.findMany());
   const [currPack, setCurrPack] = useState<number | undefined>();
+  const { t } = useTranslation();
 
   const deletePack = async () => {
     try {
@@ -22,7 +23,7 @@ export default function Packs() {
         where: eq(connectionsTable.basePack, currPack!),
       });
       if (connections.length > 0) {
-        toast(i18n.get("migrateBeforeDelete"), ToastAndroid.LONG);
+        toast(t("migrateBeforeDelete"), ToastAndroid.LONG);
       } else {
         await db.delete(basePacksTable).where(eq(basePacksTable.id, currPack!));
         toast("Successfully deleted");

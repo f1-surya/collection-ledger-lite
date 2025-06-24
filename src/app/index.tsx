@@ -5,13 +5,13 @@ import { db } from "@/db";
 import useConnections, {
   type GetConnectionsReturnType,
 } from "@/hooks/connections";
-import { default as i18n } from "@/lib/i18";
 import { mmkv } from "@/lib/mmkv";
 import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack } from "expo-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Keyboard, StyleSheet, TextInput, View } from "react-native";
 import { Drawer } from "react-native-drawer-layout";
 import "react-native-gesture-handler";
@@ -41,6 +41,7 @@ export default function Index() {
     GetConnectionsReturnType[number] | null
   >(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { t } = useTranslation();
   const theme = useTheme();
   const searchBar = useRef<TextInput | null>(null);
 
@@ -89,7 +90,7 @@ export default function Index() {
         />
         {connections.length === 0 && (
           <Text variant="titleMedium" style={styles.noConnections}>
-            {i18n.get("noConnections")}
+            {t("noConnections")}
           </Text>
         )}
         <FlashList

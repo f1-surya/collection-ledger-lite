@@ -1,7 +1,6 @@
 import FormTextInput from "@/components/form-text-input";
 import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { asc, eq } from "drizzle-orm";
@@ -9,6 +8,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, useColorScheme, View } from "react-native";
 import { Button, Icon, IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -42,6 +42,7 @@ export default function AddConnection() {
   );
   const colorScheme = useColorScheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!id) return;
@@ -67,7 +68,7 @@ export default function AddConnection() {
       });
       if (id) {
         if (prevConnection && prevConnection.id !== parseInt(id)) {
-          toast(i18n.get("duplicateSmc"));
+          toast(t("duplicateSmc"));
           return;
         } else {
           await db
@@ -77,7 +78,7 @@ export default function AddConnection() {
         }
       } else {
         if (prevConnection) {
-          toast(i18n.get("duplicateSmc"));
+          toast(t("duplicateSmc"));
           return;
         } else {
           await db.insert(connectionsTable).values(data);
@@ -86,7 +87,7 @@ export default function AddConnection() {
 
       reset();
       router.back();
-      toast(i18n.get("savedConnection"));
+      toast(t("savedConnection"));
     } catch (err) {
       console.error(err);
       // @ts-expect-error Message will be there
@@ -103,19 +104,19 @@ export default function AddConnection() {
       <FormTextInput
         name="name"
         testId="name"
-        placeHolder={i18n.get("customerName")}
+        placeHolder={t("customerName")}
         control={control}
       />
       <FormTextInput
         name="boxNumber"
         testId="boxNumber"
-        placeHolder={i18n.get("boxNumber")}
+        placeHolder={t("boxNumber")}
         control={control}
       />
       <FormTextInput
         name="phoneNumber"
         testId="phoneNumber"
-        placeHolder={i18n.get("phoneNumber")}
+        placeHolder={t("phoneNumber")}
         control={control}
       />
       <View style={styles.areaSelector}>
@@ -228,7 +229,7 @@ export default function AddConnection() {
         mode="contained"
         testID="save-connection-button"
       >
-        {i18n.get("save")}
+        {t("save")}
       </Button>
     </SafeAreaView>
   );

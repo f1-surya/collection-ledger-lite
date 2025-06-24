@@ -1,12 +1,12 @@
 import { db } from "@/db";
 import { areasTable, connectionsTable } from "@/db/schema";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, ToastAndroid } from "react-native";
 import {
   Button,
@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Areas() {
   const { data } = useLiveQuery(db.query.areasTable.findMany());
   const [currArea, setCurrArea] = useState<number | undefined>();
+  const { t } = useTranslation();
 
   const deleteArea = async () => {
     try {
@@ -30,7 +31,7 @@ export default function Areas() {
           where: eq(connectionsTable.area, currArea),
         });
         if (connections.length > 0) {
-          toast(i18n.get("areaDelete"), ToastAndroid.LONG);
+          toast(t("areaDelete"), ToastAndroid.LONG);
         } else {
           await db.delete(areasTable).where(eq(areasTable.id, currArea));
           toast("Area successfully deleted.");
@@ -72,9 +73,9 @@ export default function Areas() {
           visible={currArea !== undefined}
           onDismiss={() => setCurrArea(undefined)}
         >
-          <Dialog.Title>{i18n.get("warning")} !!!</Dialog.Title>
+          <Dialog.Title>{t("warning")} !!!</Dialog.Title>
           <Dialog.Content>
-            <Text>{i18n.get("deleteWarning")}</Text>
+            <Text>{t("deleteWarning")}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setCurrArea(undefined)}>Cancel</Button>

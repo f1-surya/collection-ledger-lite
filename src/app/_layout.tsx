@@ -10,6 +10,7 @@ import { useColorScheme } from "react-native";
 import { adaptNavigationTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import migrations from "../../drizzle/migrations";
+import "@/lib/i18";
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -42,7 +43,7 @@ export default function RootLayout() {
           <Stack.Screen name="packs" options={{ title: "Base packs" }} />
           <Stack.Screen name="areas" options={{ title: "Areas" }} />
           <Stack.Screen name="channels" options={{ title: "Channels" }} />
-          <Stack.Screen name="data" options={{ title: "Data" }} />
+          <Stack.Screen name="settings" options={{ title: "Settings" }} />
           <Stack.Screen
             name="monthly-stats"
             options={{ title: "Monthly stats" }}
