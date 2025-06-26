@@ -16,10 +16,12 @@ import { Keyboard, StyleSheet, TextInput, View } from "react-native";
 import { Drawer } from "react-native-drawer-layout";
 import "react-native-gesture-handler";
 import {
+  Button,
   Card,
+  Dialog,
   IconButton,
+  Portal,
   Searchbar,
-  Surface,
   Text,
   useTheme,
 } from "react-native-paper";
@@ -41,6 +43,7 @@ export default function Index() {
     GetConnectionsReturnType[number] | null
   >(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [filterDialogVisible, setFilterDialogVisible] = useState(false);
   const { t } = useTranslation();
   const theme = useTheme();
   const searchBar = useRef<TextInput | null>(null);
@@ -64,12 +67,20 @@ export default function Index() {
             />
           ),
           headerRight: (props) => (
-            <IconButton
-              {...props}
-              testID="add-connection-button"
-              icon="plus"
-              onPressIn={() => router.push("/connection/add-connection")}
-            />
+            <View style={{ flexDirection: "row" }}>
+              <IconButton
+                {...props}
+                testID="filter-connections-button"
+                icon="filter-variant"
+                onPress={() => setFilterDialogVisible(true)}
+              />
+              <IconButton
+                {...props}
+                testID="add-connection-button"
+                icon="plus"
+                onPressIn={() => router.push("/connection/add-connection")}
+              />
+            </View>
           ),
         }}
       />
@@ -142,40 +153,56 @@ export default function Index() {
           currConnection={currConnection}
           setCurrConnection={setCurrConnection}
         />
-        <Surface style={styles.filters}>
-          <Dropdown
-            data={areas ? [...areas.map((area) => area.name), "Area"] : []}
-            defaultValue={selectedArea}
-            onChange={(val) => {
-              setSelectedArea(val);
-              mmkv.set("area", val);
-            }}
-          />
-          <Dropdown
-            data={["Paid", "Unpaid", "Status"]}
-            defaultValue={selectedStatus}
-            onChange={(val) => {
-              setSelectedStatus(val);
-              mmkv.set("status", val);
-            }}
-          />
-        </Surface>
+        <Portal>
+          <Dialog
+            visible={filterDialogVisible}
+            onDismiss={() => setFilterDialogVisible(false)}
+          >
+            <Dialog.Title>Filters</Dialog.Title>
+            <Dialog.Content style={styles.filters}>
+              <Dropdown
+                data={areas ? [...areas.map((area) => area.name), "Area"] : []}
+                defaultValue={selectedArea}
+                onChange={(val) => {
+                  setSelectedArea(val);
+                  mmkv.set("area", val);
+                }}
+              />
+              <Dropdown
+                data={["Paid", "Unpaid", "Status"]}
+                defaultValue={selectedStatus}
+                onChange={(val) => {
+                  setSelectedStatus(val);
+                  mmkv.set("status", val);
+                }}
+              />
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                mode="contained"
+                onPress={() => setFilterDialogVisible(false)}
+              >
+                Done
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </Drawer>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  filters: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 15,
-  },
   nameFilter: {
     width: "70%",
   },
   prices: {
     fontWeight: "bold",
+  },
+  filters: {
+    gap: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   connectionInfo: {
     flexDirection: "row",
