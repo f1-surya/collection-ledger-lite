@@ -2,7 +2,6 @@ import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/connection-funcs";
 import { addonsTable, connectionsTable } from "@/db/schema";
-import i18n from "@/lib/i18";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
 import { format, isThisMonth } from "date-fns";
@@ -10,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 import {
   Appbar,
@@ -43,6 +43,7 @@ export default function ViewConnection() {
     [id],
   );
   const [currAddon, setCurrAddon] = useState<number | undefined>();
+  const { t } = useTranslation();
 
   const markAsPaid = async () => {
     if (!data?.basePack) return;
@@ -88,7 +89,7 @@ export default function ViewConnection() {
       />
       <Card>
         <Card.Title
-          title={`${i18n.get("customerName")}: ${data?.name}`}
+          title={`${t("customerName")}: ${data?.name}`}
           titleVariant="titleMedium"
           subtitle={`Box number: ${data?.boxNumber}`}
           subtitleVariant="titleSmall"
@@ -106,7 +107,7 @@ export default function ViewConnection() {
           <Text>Status: {data?.status}</Text>
           <Text>Current pack: {data?.basePack.name}</Text>
           <Text>
-            {i18n.get("lastPayment")}:{" "}
+            {t("lastPayment")}:{" "}
             {data?.lastPayment &&
               format(new Date(data!.lastPayment), "dd/MM/yyyy")}
           </Text>
@@ -148,7 +149,7 @@ export default function ViewConnection() {
             mode="text"
             onPress={markAsPaid}
           >
-            {i18n.get("markAsPaid")}
+            {t("markAsPaid")}
           </Button>
         </Card.Actions>
       </Card>
@@ -191,7 +192,7 @@ export default function ViewConnection() {
           variant="bodyMedium"
           style={{ textAlign: "center", marginTop: 10 }}
         >
-          {i18n.get("noAddons")}
+          {t("noAddons")}
         </Text>
       )}
       <DeleteWarning
