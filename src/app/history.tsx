@@ -1,14 +1,15 @@
+import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
 import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { format, startOfMonth } from "date-fns";
-import { and, gte, lte } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import {
   Button,
   Divider,
@@ -48,6 +49,9 @@ export default function History() {
   );
   const { t } = useTranslation();
   type Payments = NonNullable<typeof data>;
+  const [currPayment, setCurrPayment] = useState<
+    Payments[number] | undefined
+  >();
 
   const exportData = async () => {
     try {
@@ -137,6 +141,12 @@ export default function History() {
     }
   };
 
+  const deletePayment = async () => {
+    await db.delete(paymentsTable).where(eq(paymentsTable.id, currPayment!.id));
+    setCurrPayment(undefined);
+    toast("Successfully delete payment.");
+  };
+
   const renderPayment = (info: ListRenderItemInfo<Payments[number]>) => {
     let description = `Paid ${info.item.customerPrice} for ${info.item.currentPack.name}`;
     let icon = "receipt";
@@ -151,6 +161,11 @@ export default function History() {
         title={info.item.connection.name}
         description={description}
         left={(props) => <List.Icon {...props} icon={icon} />}
+        right={(props) => (
+          <Pressable onPress={() => setCurrPayment(info.item)}>
+            <List.Icon {...props} icon="delete-outline" color="red" />
+          </Pressable>
+        )}
       />
     );
   };
@@ -180,6 +195,11 @@ export default function History() {
           {t("noPayment")}
         </Text>
       )}
+      <DeleteWarning
+        open={!!currPayment}
+        onClose={() => setCurrPayment(undefined)}
+        onConfirm={deletePayment}
+      />
       <Surface style={styles.bottomBar} elevation={4}>
         <Button mode="outlined" onPress={() => setOpen(true)}>
           {format(dates.startDate, "dd-MM-yyyy")} -{" "}

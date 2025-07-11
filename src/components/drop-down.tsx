@@ -42,7 +42,7 @@ export default function Dropdown({
 
 const styles = StyleSheet.create({
   dropDownButton: {
-    width: "30%",
+    width: "40%",
     flexDirection: "row",
     borderColor: "gray",
     borderRadius: 5,

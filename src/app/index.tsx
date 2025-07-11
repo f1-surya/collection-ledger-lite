@@ -72,7 +72,7 @@ export default function Index() {
                 {...props}
                 testID="filter-connections-button"
                 icon="filter-variant"
-                onPress={() => setFilterDialogVisible(true)}
+                onPressIn={() => setFilterDialogVisible(true)}
               />
               <IconButton
                 {...props}
