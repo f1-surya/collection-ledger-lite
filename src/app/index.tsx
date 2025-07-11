@@ -152,6 +152,7 @@ export default function Index() {
         <ConnectionDialog
           currConnection={currConnection}
           setCurrConnection={setCurrConnection}
+          refresh={refresh}
         />
         <Portal>
           <Dialog

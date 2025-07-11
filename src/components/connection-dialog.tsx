@@ -19,11 +19,13 @@ import {
 interface Props {
   currConnection: GetConnectionsReturnType[number] | null;
   setCurrConnection: (a: GetConnectionsReturnType[number] | null) => void;
+  refresh: () => void;
 }
 
 export default function ConnectionDialog({
   currConnection,
   setCurrConnection,
+  refresh,
 }: Props) {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
@@ -55,6 +57,7 @@ export default function ConnectionDialog({
     if (!currConnection) return;
     try {
       await markConnectionAsPaid(currConnection.id, currConnection.basePack);
+      refresh();
       setCurrConnection(null);
     } catch (e) {
       console.error(e);

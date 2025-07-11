@@ -1,5 +1,5 @@
 import { startOfMonth } from "date-fns";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, eq, gt, gte, lt, lte } from "drizzle-orm";
 import { db } from ".";
 import {
   addonsTable,
@@ -17,9 +17,18 @@ export const markConnectionAsPaid = async (
   connectionId: number,
   currentPack: typeof basePacksTable.$inferSelect,
 ) => {
+  const today = new Date();
+  const existingPayment = await db.query.paymentsTable.findFirst({
+    where: and(
+      eq(paymentsTable.connection, connectionId),
+      gt(paymentsTable.date, startOfMonth(today).getTime()),
+      lt(paymentsTable.date, today.getTime()),
+    ),
+  });
+  if (existingPayment) {
+    return;
+  }
   await db.transaction(async (tx) => {
-    const today = new Date();
-
     // Calculate total prices including base pack and all addon channels
     let lcoPrice = currentPack.lcoPrice;
     let customerPrice = currentPack.customerPrice;
