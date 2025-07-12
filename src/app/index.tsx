@@ -117,6 +117,12 @@ export default function Index() {
                 Keyboard.dismiss();
                 setCurrConnection(item);
               }}
+              onLongPress={() =>
+                router.push({
+                  pathname: "/connection",
+                  params: { id: item.id },
+                })
+              }
               style={styles.connection}
             >
               <Card.Title

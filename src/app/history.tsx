@@ -1,11 +1,12 @@
 import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
-import { connectionsTable, paymentsTable } from "@/db/schema";
+import { deletePayment } from "@/db/payments-functions";
+import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
 import toast from "@/lib/toast";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { format, startOfMonth } from "date-fns";
-import { and, desc, eq, gte, lte } from "drizzle-orm";
+import { and, gte, lte } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -141,20 +142,8 @@ export default function History() {
     }
   };
 
-  const deletePayment = async () => {
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(paymentsTable)
-        .where(eq(paymentsTable.id, currPayment!.id));
-      const lastPayment = await tx.query.paymentsTable.findFirst({
-        where: eq(paymentsTable.connection, currPayment!.connection.id),
-        orderBy: desc(paymentsTable.date),
-      });
-      await tx
-        .update(connectionsTable)
-        .set({ lastPayment: lastPayment?.date ?? null })
-        .where(eq(connectionsTable.id, currPayment!.connection.id));
-    });
+  const handleDelete = async () => {
+    await deletePayment(currPayment!.id, currPayment!.connection.id);
     setCurrPayment(undefined);
     toast("Successfully delete payment.");
   };
@@ -210,7 +199,7 @@ export default function History() {
       <DeleteWarning
         open={currPayment != undefined}
         onClose={() => setCurrPayment(undefined)}
-        onConfirm={deletePayment}
+        onConfirm={handleDelete}
       />
       <Surface style={styles.bottomBar} elevation={4}>
         <Button mode="outlined" onPress={() => setOpen(true)}>

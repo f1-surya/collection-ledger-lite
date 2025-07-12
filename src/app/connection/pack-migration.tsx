@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { migratePack } from "@/db/connection-funcs";
+import { migratePack } from "@/db/payments-functions";
 import { basePacksTable } from "@/db/schema";
 import toast from "@/lib/toast";
 import { ne } from "drizzle-orm";

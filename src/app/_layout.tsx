@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import "@/lib/i18";
 import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
@@ -6,11 +7,10 @@ import {
 } from "@react-navigation/native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Stack } from "expo-router";
-import { useColorScheme } from "react-native";
+import { StatusBar, useColorScheme } from "react-native";
 import { adaptNavigationTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import migrations from "../../drizzle/migrations";
-import "@/lib/i18";
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -30,12 +30,17 @@ const CombinedDarkTheme = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   useMigrations(db, migrations);
+  const isDarkMode = colorScheme === "dark";
 
   return (
     <PaperProvider>
       <ThemeProvider
-        value={colorScheme === "dark" ? CombinedDarkTheme : CombinedLightTheme}
+        value={isDarkMode ? CombinedDarkTheme : CombinedLightTheme}
       >
+        <StatusBar
+          barStyle={isDarkMode ? "light-content" : "dark-content"}
+          backgroundColor={isDarkMode ? "#000000" : "#ffffff"}
+        />
         <Stack>
           <Stack.Screen name="index" options={{ title: "Connections" }} />
           <Stack.Screen name="connection" options={{ headerShown: false }} />
@@ -47,6 +52,10 @@ export default function RootLayout() {
           <Stack.Screen
             name="monthly-stats"
             options={{ title: "Monthly stats" }}
+          />
+          <Stack.Screen
+            name="payment-history"
+            options={{ title: "Payment history" }}
           />
         </Stack>
       </ThemeProvider>

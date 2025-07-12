@@ -1,5 +1,5 @@
 import { startOfMonth } from "date-fns";
-import { and, eq, gt, gte, lt, lte } from "drizzle-orm";
+import { and, desc, eq, gt, gte, lt, lte } from "drizzle-orm";
 import { db } from ".";
 import {
   addonsTable,
@@ -122,6 +122,29 @@ export const migratePack = async (
     await tx
       .update(connectionsTable)
       .set({ lastPayment: today.getTime(), basePack: toPackId })
+      .where(eq(connectionsTable.id, connectionId));
+  });
+};
+
+/**
+ * This function deletes the given payment and updates the connection's lastPayment.
+ *
+ * @param {number} paymentId Id of the the payment to be deleted.
+ * @param {number} connectionId Id of the connection that the payment belongs to
+ */
+export const deletePayment = async (
+  paymentId: number,
+  connectionId: number,
+) => {
+  await db.transaction(async (tx) => {
+    await tx.delete(paymentsTable).where(eq(paymentsTable.id, paymentId));
+    const lastPayment = await tx.query.paymentsTable.findFirst({
+      where: eq(paymentsTable.connection, connectionId),
+      orderBy: desc(paymentsTable.date),
+    });
+    await tx
+      .update(connectionsTable)
+      .set({ lastPayment: lastPayment?.date ?? null })
       .where(eq(connectionsTable.id, connectionId));
   });
 };

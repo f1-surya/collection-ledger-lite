@@ -1,4 +1,4 @@
-import { markConnectionAsPaid } from "@/db/connection-funcs";
+import { markConnectionAsPaid } from "@/db/payments-functions";
 import { GetConnectionsReturnType } from "@/hooks/connections";
 import toast from "@/lib/toast";
 import { isThisMonth } from "date-fns";

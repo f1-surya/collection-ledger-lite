@@ -1,6 +1,6 @@
 import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
-import { markConnectionAsPaid } from "@/db/connection-funcs";
+import { markConnectionAsPaid } from "@/db/payments-functions";
 import { addonsTable, connectionsTable } from "@/db/schema";
 import toast from "@/lib/toast";
 import { FlashList } from "@shopify/flash-list";
@@ -12,7 +12,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 import {
-  Appbar,
   Button,
   Card,
   Divider,
@@ -78,11 +77,16 @@ export default function ViewConnection() {
       <Stack.Screen
         options={{
           title: "View connection",
-          headerLeft: (props) => (
-            <Appbar.BackAction
+          headerRight: (props) => (
+            <IconButton
               {...props}
-              style={{ margin: 0, width: "auto", marginRight: 25 }}
-              onPress={router.back}
+              icon="history"
+              onPress={() =>
+                router.push({
+                  pathname: "/payment-history",
+                  params: { connectionId: data?.id },
+                })
+              }
             />
           ),
         }}

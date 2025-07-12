@@ -42,6 +42,8 @@ const resources = {
       delete:
         "இந்த சேனலை இணைப்புகள் பயன்படுத்துகின்றன. எனவே நீக்குவதற்கு முன் அவற்றை அகற்றவும்.",
       sms: "உங்கள் சந்தா தொகையை இந்த மாத இறுதிக்குள் செலுத்தவும்",
+      noPaymentForConnection:
+        "இந்த இணைப்பிற்கான கட்டண பதிவுகள் எதுவும் கிடைக்கவில்லை.",
     },
   },
   en: {
@@ -82,6 +84,7 @@ const resources = {
       delete:
         "This channel is being used by connections. Please remove them before deleting.",
       sms: "Please pay your subscription amount by the end of this month",
+      noPaymentForConnection: "No payment records found for this connection.",
     },
   },
 };
