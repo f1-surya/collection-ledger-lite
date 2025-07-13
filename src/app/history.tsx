@@ -7,7 +7,7 @@ import toast from "@/lib/toast";
 import { captureException } from "@sentry/react-native";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { format, startOfMonth } from "date-fns";
-import { and, gte, lte } from "drizzle-orm";
+import { and, desc, gte, lte } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -45,7 +45,7 @@ export default function History() {
         gte(paymentsTable.date, dates.startDate.getTime()),
         lte(paymentsTable.date, dates.endDate.getTime()),
       ),
-      orderBy: paymentsTable.date,
+      orderBy: desc(paymentsTable.date),
     }),
     [dates],
   );
@@ -239,12 +239,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomBar: {
-    position: "absolute",
     paddingHorizontal: 10,
     paddingVertical: 20,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    marginHorizontal: 5,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     flexDirection: "row",
