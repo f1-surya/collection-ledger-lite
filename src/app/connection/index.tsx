@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { markConnectionAsPaid } from "@/db/payments-functions";
 import { addonsTable, connectionsTable } from "@/db/schema";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { FlashList } from "@shopify/flash-list";
 import { format, isThisMonth } from "date-fns";
 import { eq } from "drizzle-orm";
@@ -50,6 +51,7 @@ export default function ViewConnection() {
       await markConnectionAsPaid(parseInt(id), data.basePack);
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Failed to mark as paid");
     }
   };
@@ -67,6 +69,7 @@ export default function ViewConnection() {
       toast("Successfully deleted");
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Something went wrong");
     }
     setCurrAddon(undefined);
@@ -81,7 +84,7 @@ export default function ViewConnection() {
             <IconButton
               {...props}
               icon="history"
-              onPress={() =>
+              onPressIn={() =>
                 router.push({
                   pathname: "/payment-history",
                   params: { connectionId: data?.id },

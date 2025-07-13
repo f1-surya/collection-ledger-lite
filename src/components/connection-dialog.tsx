@@ -1,6 +1,7 @@
 import { markConnectionAsPaid } from "@/db/payments-functions";
 import { GetConnectionsReturnType } from "@/hooks/connections";
 import toast from "@/lib/toast";
+import * as Sentry from "@sentry/react-native";
 import { isThisMonth } from "date-fns";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
@@ -60,6 +61,7 @@ export default function ConnectionDialog({
       refresh();
       setCurrConnection(null);
     } catch (e) {
+      Sentry.captureException(e);
       console.error(e);
       toast("Something went wrong");
     }

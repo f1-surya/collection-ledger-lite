@@ -2,6 +2,7 @@ import DeleteWarning from "@/components/delete-warning";
 import { db } from "@/db";
 import { addonsTable, channelsTable } from "@/db/schema";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -32,6 +33,7 @@ export default function Channels() {
       toast("Successfully deleted");
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Something went wrong");
     }
     setCurrChannel(undefined);

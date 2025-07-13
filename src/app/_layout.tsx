@@ -5,6 +5,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import * as Sentry from "@sentry/react-native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Stack } from "expo-router";
 import { StatusBar, useColorScheme } from "react-native";
@@ -26,6 +27,22 @@ const CombinedDarkTheme = {
   ...NavigationDarkTheme,
   ...DarkTheme,
 };
+
+Sentry.init({
+  dsn: "https://2786e180c9c2dbff3b2d609340fe398c@o4509656318476288.ingest.de.sentry.io/4509656320507984",
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [Sentry.mobileReplayIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

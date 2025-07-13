@@ -2,7 +2,7 @@
   "expo": {
     "name": "Collection ledger",
     "slug": "collection-ledger",
-    "version": "0.12.0",
+    "version": "0.12.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "collectionledger",
@@ -42,6 +42,14 @@
         {
           "ios": ["whatsapp"],
           "android": [""]
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "guru-cables"
         }
       ]
     ],

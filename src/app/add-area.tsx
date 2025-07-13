@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { areasTable } from "@/db/schema";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { eq } from "drizzle-orm";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -46,6 +47,7 @@ export default function AddArea() {
         router.back();
       }
     } catch (e) {
+      captureException(e);
       console.error(e);
       toast("Something went wrong");
     }

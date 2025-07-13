@@ -1,12 +1,13 @@
-import { read, utils } from "xlsx";
-import toast from "./toast";
 import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
+import { captureException } from "@sentry/react-native";
+import { getDocumentAsync } from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite";
-import { askPermission, saveFile } from "./file-system";
 import Share from "react-native-share";
-import { getDocumentAsync } from "expo-document-picker";
+import { read, utils } from "xlsx";
+import { askPermission, saveFile } from "./file-system";
+import toast from "./toast";
 
 export async function importFromSheet(base64: string) {
   try {
@@ -57,6 +58,7 @@ export async function importFromSheet(base64: string) {
     }
   } catch (e) {
     console.error(e);
+    captureException(e);
     toast("Something went wrong");
   }
 }
@@ -82,10 +84,12 @@ export async function exportDb() {
       );
     } catch (e) {
       console.error(e);
+      captureException(e);
       Share.open({ url: dbPath });
     }
   } catch (e) {
     console.error(e);
+    captureException(e);
     toast("Something went wrong");
   }
 }
@@ -106,6 +110,7 @@ export async function importDb() {
     }
   } catch (e) {
     console.error(e);
+    captureException(e);
     toast("Something went wrong");
   }
 }

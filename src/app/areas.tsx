@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { areasTable, connectionsTable } from "@/db/schema";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -39,6 +40,7 @@ export default function Areas() {
       }
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Something went wrong");
     }
     setCurrArea(undefined);

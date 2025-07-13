@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { areasTable, basePacksTable, connectionsTable } from "@/db/schema";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { captureException } from "@sentry/react-native";
 import { asc, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -89,6 +90,7 @@ export default function AddConnection() {
       router.back();
       toast(t("savedConnection"));
     } catch (err) {
+      captureException(err);
       console.error(err);
       // @ts-expect-error Message will be there
       toast(err.message);

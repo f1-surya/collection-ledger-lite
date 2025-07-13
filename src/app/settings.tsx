@@ -2,6 +2,7 @@ import { exportDb, importDb, importFromSheet } from "@/lib/data";
 import { mmkv } from "@/lib/mmkv";
 import toast from "@/lib/toast";
 import { Picker } from "@react-native-picker/picker";
+import { captureException } from "@sentry/react-native";
 import { getDocumentAsync } from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { router } from "expo-router";
@@ -42,6 +43,7 @@ export default function Data() {
       }
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Something went wrong");
       setIsLoading(false);
     }

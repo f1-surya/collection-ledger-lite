@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { channelsTable } from "@/db/schema";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { captureException } from "@sentry/react-native";
 import { eq } from "drizzle-orm";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -58,6 +59,7 @@ export default function CreateAddon() {
       router.back();
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Something went wrong");
     }
   };

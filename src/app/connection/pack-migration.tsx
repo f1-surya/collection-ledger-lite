@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { migratePack } from "@/db/payments-functions";
 import { basePacksTable } from "@/db/schema";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { ne } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -36,6 +37,7 @@ export default function PackMigration() {
       router.back();
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Failed to migrate pack");
     }
   };

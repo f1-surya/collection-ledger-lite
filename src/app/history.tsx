@@ -4,6 +4,7 @@ import { deletePayment } from "@/db/payments-functions";
 import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { format, startOfMonth } from "date-fns";
 import { and, gte, lte } from "drizzle-orm";
@@ -138,6 +139,7 @@ export default function History() {
       toast("Files exported successfully");
     } catch (error) {
       console.error(error);
+      captureException(error);
       toast("Failed to export file");
     }
   };

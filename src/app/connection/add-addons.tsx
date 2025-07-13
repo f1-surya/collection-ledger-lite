@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { addonsTable, channelsTable } from "@/db/schema";
 import toast from "@/lib/toast";
+import { captureException } from "@sentry/react-native";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -38,6 +39,7 @@ export default function AddAddons() {
       router.back();
     } catch (e) {
       console.error(e);
+      captureException(e);
       toast("Something went wrong");
     }
   };

@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { basePacksTable } from "@/db/schema";
 import toast from "@/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { captureException } from "@sentry/react-native";
 import { eq } from "drizzle-orm";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -54,10 +55,11 @@ export default function AddPack() {
       }
       reset();
       router.back();
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
+      captureException(e);
       // @ts-expect-error - Message will be there
-      toast(error.message);
+      toast(e.message);
     }
   };
 
