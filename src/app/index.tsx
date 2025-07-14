@@ -10,9 +10,16 @@ import { FlashList } from "@shopify/flash-list";
 import { isThisMonth } from "date-fns";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { router, Stack } from "expo-router";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Keyboard, StyleSheet, TextInput, View } from "react-native";
+import {
+  Keyboard,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { Drawer } from "react-native-drawer-layout";
 import "react-native-gesture-handler";
 import {
@@ -44,9 +51,26 @@ export default function Index() {
   >(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filterDialogVisible, setFilterDialogVisible] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const { t } = useTranslation();
   const theme = useTheme();
   const searchBar = useRef<TextInput | null>(null);
+  const flashList = useRef<FlashList<(typeof connections)[number]>>(null);
+
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (e.nativeEvent.contentOffset.y > 500) {
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
+      }
+    },
+    [],
+  );
+
+  const scrollToTop = () => {
+    flashList.current?.scrollToIndex({ index: 0, animated: true });
+  };
 
   return (
     <SafeAreaView
@@ -105,11 +129,14 @@ export default function Index() {
           </Text>
         )}
         <FlashList
+          ref={flashList}
           data={connections}
           estimatedItemSize={100}
           keyboardShouldPersistTaps="handled"
           refreshing={false}
           onRefresh={refresh}
+          onScroll={handleScroll}
+          scrollEventThrottle={32}
           renderItem={({ item }) => (
             <Card
               mode="elevated"
@@ -194,6 +221,14 @@ export default function Index() {
             </Dialog.Actions>
           </Dialog>
         </Portal>
+        {showScrollToTop && (
+          <IconButton
+            icon="format-vertical-align-top"
+            mode="contained-tonal"
+            style={styles.scrollToTop}
+            onPress={scrollToTop}
+          />
+        )}
       </Drawer>
     </SafeAreaView>
   );
@@ -229,5 +264,13 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     margin: 6,
+  },
+  scrollToTop: {
+    position: "absolute",
+    bottom: 30,
+    right: 10,
+    zIndex: 1000,
+    width: 50,
+    height: 50,
   },
 });
