@@ -1,5 +1,9 @@
+import { db } from "@/db";
+import { connectionsTable } from "@/db/schema";
 import { exportDb, importDb, importFromSheet } from "@/lib/data";
+import { askPermission, saveFile } from "@/lib/file-system";
 import { mmkv } from "@/lib/mmkv";
+import { writeSheet } from "@/lib/sheet";
 import toast from "@/lib/toast";
 import { Picker } from "@react-native-picker/picker";
 import { captureException } from "@sentry/react-native";
@@ -49,6 +53,47 @@ export default function Data() {
     }
   };
 
+  const exportAsSheet = async () => {
+    setIsLoading(true);
+    const conns = await db.query.connectionsTable.findMany({
+      with: {
+        area: true,
+        basePack: true,
+      },
+      orderBy: connectionsTable.name,
+    });
+    const sheetData = {
+      Connections: [
+        ["NAME", "SMARTCARD", "ADDRESS", "PACKAGE"],
+        ...conns.map((conn) => [
+          conn.name,
+          conn.boxNumber,
+          conn.area.name,
+          conn.basePack.name,
+        ]),
+      ],
+    };
+
+    const permissions = await askPermission();
+    if (!permissions.granted) {
+      return;
+    }
+
+    const file = writeSheet(sheetData);
+    try {
+      await saveFile(
+        "Connections_List.xlsx",
+        file,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        permissions.directoryUri,
+      );
+    } catch (e) {
+      captureException(e);
+      toast("Something went wrong");
+    }
+    setIsLoading(false);
+  };
+
   const handleExport = async () => {
     setIsLoading(true);
     await exportDb();
@@ -95,6 +140,11 @@ export default function Data() {
           title="Import data"
           left={(props) => <List.Icon icon="google-spreadsheet" {...props} />}
           onPress={pickSheet}
+        />
+        <List.Item
+          title="Export data"
+          left={(props) => <List.Icon icon="file-export" {...props} />}
+          onPress={exportAsSheet}
         />
         <List.Item
           title="Export database"

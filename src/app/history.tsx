@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { deletePayment } from "@/db/payments-functions";
 import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
+import { writeSheet } from "@/lib/sheet";
 import toast from "@/lib/toast";
 import { captureException } from "@sentry/react-native";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
@@ -57,17 +58,11 @@ export default function History() {
 
   const exportData = async () => {
     try {
-      const workbook = XLSX.utils.book_new();
-      const paymentsSheet = XLSX.utils.aoa_to_sheet(
-        data
+      const outfile = writeSheet({
+        Payments: data
           .filter((payment) => payment.type === "payment")
           .map((payment) => payment.connection.boxNumber)
           .map((no) => [no]),
-      );
-      XLSX.utils.book_append_sheet(workbook, paymentsSheet, "Payments");
-      const outfile = XLSX.write(workbook, {
-        type: "base64",
-        bookType: "xlsx",
       });
 
       const filename = `payment-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.xlsx`;
