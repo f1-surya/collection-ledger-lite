@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { deletePayment } from "@/db/payments-functions";
 import { paymentsTable } from "@/db/schema";
 import { askPermission, saveFile, saveFileLocal } from "@/lib/file-system";
-import { writeSheet } from "@/lib/sheet";
+import { writeCsv } from "@/lib/sheet";
 import toast from "@/lib/toast";
 import { captureException } from "@sentry/react-native";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
@@ -24,7 +24,6 @@ import {
 import { DatePickerModal } from "react-native-paper-dates";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Share from "react-native-share";
-import XLSX from "xlsx";
 
 export default function History() {
   const [paymentType, setPaymentType] = useState<"payment" | "migration">(
@@ -58,26 +57,21 @@ export default function History() {
 
   const exportData = async () => {
     try {
-      const outfile = writeSheet({
-        Payments: data
+      const outfile = writeCsv(
+        data
           .filter((payment) => payment.type === "payment")
           .map((payment) => payment.connection.boxNumber)
           .map((no) => [no]),
-      });
+      );
 
-      const filename = `payment-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.xlsx`;
+      const filename = `payment-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.csv`;
       const permissions = await askPermission();
       if (!permissions.granted) {
         return;
       }
       const files = [];
       try {
-        await saveFile(
-          filename,
-          outfile,
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          permissions.directoryUri,
-        );
+        await saveFile(filename, outfile, "text/csv", permissions.directoryUri);
       } catch {
         console.log("Save to downloads failed. Invoking share...");
         const uri = await saveFileLocal(filename, outfile);
@@ -100,26 +94,20 @@ export default function History() {
         {} as Record<string, Payments>,
       );
       for (const [to, payments] of Object.entries(migrationPaymentsGrouped)) {
-        const migrationWorkbook = XLSX.utils.book_new();
-        const sheet = XLSX.utils.aoa_to_sheet(
-          payments.map((payments) => [payments.connection.boxNumber]),
+        const migrationOutfile = writeCsv(
+          payments.map((payment) => [payment.connection.boxNumber]),
         );
-        XLSX.utils.book_append_sheet(migrationWorkbook, sheet, to);
         // Save the file
         const migrationFilename =
-          `migration-${to}-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.xlsx`.replaceAll(
+          `migration-${to}-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.csv`.replaceAll(
             " ",
             "-",
           );
-        const migrationOutfile = XLSX.write(migrationWorkbook, {
-          type: "base64",
-          bookType: "xlsx",
-        });
         try {
           await saveFile(
             migrationFilename,
             migrationOutfile,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/csv",
             permissions.directoryUri,
           );
         } catch {

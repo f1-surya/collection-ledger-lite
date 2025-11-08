@@ -19,3 +19,8 @@ export function writeSheet(data: { [key: string]: string[][] }) {
 
   return write(workbook, { type: "base64", bookType: "xlsx" });
 }
+
+export function writeCsv(data: string[][]) {
+  const csv = data.map((row) => row.join(",")).join("\n");
+  return btoa(csv);
+}
