@@ -57,12 +57,13 @@ export default function History() {
 
   const exportData = async () => {
     try {
-      const outfile = writeCsv(
-        data
+      const outfile = writeCsv([
+        ["VC Number"],
+        ...data
           .filter((payment) => payment.type === "payment")
           .map((payment) => payment.connection.boxNumber)
           .map((no) => [no]),
-      );
+      ]);
 
       const filename = `payment-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.csv`;
       const permissions = await askPermission();
@@ -94,9 +95,10 @@ export default function History() {
         {} as Record<string, Payments>,
       );
       for (const [to, payments] of Object.entries(migrationPaymentsGrouped)) {
-        const migrationOutfile = writeCsv(
-          payments.map((payment) => [payment.connection.boxNumber]),
-        );
+        const migrationOutfile = writeCsv([
+          ["VC Number"],
+          ...payments.map((payment) => [payment.connection.boxNumber]),
+        ]);
         // Save the file
         const migrationFilename =
           `migration-${to}-${dates.startDate.getMonth() + 1}-${dates.startDate.getFullYear()}.csv`.replaceAll(
